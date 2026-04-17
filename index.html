@@ -1766,11 +1766,27 @@
     gap: 32px;
   }
 
-  .footer-logo-wrap {
-    display: flex;
+  .footer-logo-link {
+    display: inline-flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .footer-logo-link:hover {
+    transform: translateY(-2px);
+  }
+
+  .footer-logo-link:hover .footer-logo {
+    opacity: 1;
+  }
+
+  .footer-logo-link:hover .footer-logo-sub {
+    color: var(--gold);
+    opacity: 1;
   }
 
   .footer-logo {
@@ -1787,10 +1803,6 @@
     opacity: 0.75;
   }
 
-  .footer-logo:hover {
-    opacity: 1;
-  }
-
   .footer-logo-sub {
     font-family: var(--italic);
     font-style: italic;
@@ -1798,47 +1810,7 @@
     color: var(--paper-soft);
     letter-spacing: 3px;
     opacity: 0.7;
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 24px;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .footer-link {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: var(--paper);
-    padding: 6px 16px;
-    border-bottom: 1px solid var(--ink-line);
-    transition: all 0.25s;
-  }
-
-  .footer-link:hover {
-    border-bottom-color: var(--gold);
-    color: var(--gold);
-  }
-
-  .footer-link-label {
-    font-family: var(--display);
-    font-style: italic;
-    font-size: 17px;
-    font-weight: 400;
-    letter-spacing: 2px;
-    line-height: 1.2;
-  }
-
-  .footer-link-sub {
-    font-family: var(--serif);
-    font-size: 10px;
-    color: var(--paper-soft);
-    letter-spacing: 3px;
-    margin-top: 4px;
-    opacity: 0.8;
+    transition: color 0.25s, opacity 0.25s;
   }
 
   /* ============================================
@@ -2440,15 +2412,10 @@
 <div class="footer-note">
   <div class="footer-hairline"></div>
   <div class="footer-content">
-    <div class="footer-logo-wrap">
+    <a href="https://abr.ge/slndkw" target="_blank" class="footer-logo-link" title="前往 TiTi 的卿卿我我">
       <img src="assets/titi-logo.png" alt="TiTi" class="footer-logo" />
       <div class="footer-logo-sub">by TiTi</div>
-    </div>
-    <div class="footer-links">
-      <a href="https://abr.ge/slndkw" target="_blank" class="footer-link">
-        <span class="footer-link-label">LoveyDovey</span>
-      </a>
-    </div>
+    </a>
   </div>
 </div>
 
