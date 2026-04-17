@@ -1377,31 +1377,185 @@
   /* 類別標籤 */
   .item-category-badge {
     display: inline-block;
-    padding: 3px 10px;
+    padding: 3px 11px;
     font-family: var(--serif);
     font-size: 10px;
     letter-spacing: 3px;
     border-radius: 2px;
     margin-left: auto;
     font-weight: 400;
-    border: 1px solid currentColor;
-    background: transparent !important;
+    border: 1px solid var(--cat-border, currentColor);
+    background: var(--cat-bg, transparent);
+    color: var(--cat-color, inherit);
     line-height: 1.6;
   }
 
-  .cat-character { color: #c2185b; }
-  .cat-location  { color: #0277bd; }
-  .cat-organization { color: #c05621; }
-  .cat-item      { color: #7b1fa2; }
-  .cat-term      { color: #2e7d32; }
-  .cat-event     { color: #b45309; }
-  .cat-culture   { color: #ad1457; }
-  .cat-ability   { color: #5e35b8; }
-  .cat-relationship { color: #c2185b; }
-  .cat-romance   { color: #d81b60; }
-  .cat-appearance { color: #be185d; }
-  .cat-intimacy  { color: #ad1457; }
-  .cat-nsfw      { color: #be123c; border-color: var(--gold) !important; }
+  /* 預設色（其他主題 fallback） */
+  .cat-character { --cat-color: #c2185b; }
+  .cat-location  { --cat-color: #0277bd; }
+  .cat-organization { --cat-color: #c05621; }
+  .cat-item      { --cat-color: #7b1fa2; }
+  .cat-term      { --cat-color: #2e7d32; }
+  .cat-event     { --cat-color: #b45309; }
+  .cat-culture   { --cat-color: #ad1457; }
+  .cat-ability   { --cat-color: #5e35b8; }
+  .cat-relationship { --cat-color: #c2185b; }
+  .cat-romance   { --cat-color: #d81b60; }
+  .cat-appearance { --cat-color: #be185d; }
+  .cat-intimacy  { --cat-color: #ad1457; }
+  .cat-nsfw      { --cat-color: #be123c; --cat-border: var(--gold); }
+
+  /* ===== 🌸 櫻花粉嫩：柔和粉白調 ===== */
+  [data-theme="sakura"] .cat-character,
+  :root:not([data-theme]) .cat-character {
+    --cat-color: #d4729a; --cat-bg: #fff0f5; --cat-border: #f5c9d6;
+  }
+  [data-theme="sakura"] .cat-location,
+  :root:not([data-theme]) .cat-location {
+    --cat-color: #7aa8c4; --cat-bg: #eef6fb; --cat-border: #c7dfec;
+  }
+  [data-theme="sakura"] .cat-organization,
+  :root:not([data-theme]) .cat-organization {
+    --cat-color: #d49670; --cat-bg: #fdf1e7; --cat-border: #f2d4bb;
+  }
+  [data-theme="sakura"] .cat-item,
+  :root:not([data-theme]) .cat-item {
+    --cat-color: #b082c4; --cat-bg: #f7eff9; --cat-border: #e0c8e9;
+  }
+  [data-theme="sakura"] .cat-term,
+  :root:not([data-theme]) .cat-term {
+    --cat-color: #8ab98b; --cat-bg: #eff7ef; --cat-border: #c9e0c9;
+  }
+  [data-theme="sakura"] .cat-event,
+  :root:not([data-theme]) .cat-event {
+    --cat-color: #d4b874; --cat-bg: #fbf6e8; --cat-border: #ecddb8;
+  }
+  [data-theme="sakura"] .cat-culture,
+  :root:not([data-theme]) .cat-culture {
+    --cat-color: #cd82a3; --cat-bg: #faeff4; --cat-border: #ebc9d9;
+  }
+  [data-theme="sakura"] .cat-ability,
+  :root:not([data-theme]) .cat-ability {
+    --cat-color: #9888c4; --cat-bg: #f1eef8; --cat-border: #d5cce6;
+  }
+  [data-theme="sakura"] .cat-relationship,
+  :root:not([data-theme]) .cat-relationship {
+    --cat-color: #d88aa5; --cat-bg: #fceef4; --cat-border: #eecad8;
+  }
+  [data-theme="sakura"] .cat-romance,
+  :root:not([data-theme]) .cat-romance {
+    --cat-color: #e08aa8; --cat-bg: #fdeff4; --cat-border: #f0c8d8;
+  }
+  [data-theme="sakura"] .cat-appearance,
+  :root:not([data-theme]) .cat-appearance {
+    --cat-color: #dc87ab; --cat-bg: #fceff5; --cat-border: #efc8d9;
+  }
+  [data-theme="sakura"] .cat-intimacy,
+  :root:not([data-theme]) .cat-intimacy {
+    --cat-color: #d685a8; --cat-bg: #fbedf3; --cat-border: #ecc3d6;
+  }
+  [data-theme="sakura"] .cat-nsfw,
+  :root:not([data-theme]) .cat-nsfw {
+    --cat-color: #c2185b; --cat-bg: #fde8f0; --cat-border: var(--gold);
+  }
+
+  /* ===== 💜 夜櫻紫：深色主題下用亮色粉 ===== */
+  [data-theme="nightsakura"] .cat-character    { --cat-color: #ffb3d1; --cat-bg: rgba(255,179,209,0.1); --cat-border: rgba(255,179,209,0.35); }
+  [data-theme="nightsakura"] .cat-location     { --cat-color: #a8c8e8; --cat-bg: rgba(168,200,232,0.1); --cat-border: rgba(168,200,232,0.35); }
+  [data-theme="nightsakura"] .cat-organization { --cat-color: #ffc99d; --cat-bg: rgba(255,201,157,0.1); --cat-border: rgba(255,201,157,0.35); }
+  [data-theme="nightsakura"] .cat-item         { --cat-color: #d8b3ff; --cat-bg: rgba(216,179,255,0.1); --cat-border: rgba(216,179,255,0.35); }
+  [data-theme="nightsakura"] .cat-term         { --cat-color: #b3e8b8; --cat-bg: rgba(179,232,184,0.08); --cat-border: rgba(179,232,184,0.3); }
+  [data-theme="nightsakura"] .cat-event        { --cat-color: #ffd980; --cat-bg: rgba(255,217,128,0.08); --cat-border: rgba(255,217,128,0.3); }
+  [data-theme="nightsakura"] .cat-culture      { --cat-color: #ffa8c9; --cat-bg: rgba(255,168,201,0.1); --cat-border: rgba(255,168,201,0.35); }
+  [data-theme="nightsakura"] .cat-ability      { --cat-color: #c8b3ff; --cat-bg: rgba(200,179,255,0.1); --cat-border: rgba(200,179,255,0.35); }
+  [data-theme="nightsakura"] .cat-relationship { --cat-color: #ffb3d1; --cat-bg: rgba(255,179,209,0.1); --cat-border: rgba(255,179,209,0.35); }
+  [data-theme="nightsakura"] .cat-romance      { --cat-color: #ffb0c8; --cat-bg: rgba(255,176,200,0.1); --cat-border: rgba(255,176,200,0.35); }
+  [data-theme="nightsakura"] .cat-appearance   { --cat-color: #ffb3d5; --cat-bg: rgba(255,179,213,0.1); --cat-border: rgba(255,179,213,0.35); }
+  [data-theme="nightsakura"] .cat-intimacy     { --cat-color: #ffa8c0; --cat-bg: rgba(255,168,192,0.1); --cat-border: rgba(255,168,192,0.35); }
+  [data-theme="nightsakura"] .cat-nsfw         { --cat-color: #d88fff; --cat-bg: rgba(216,143,255,0.12); --cat-border: var(--gold); }
+
+  /* ===== 🖤 暗夜墨染：暖米黃系 ===== */
+  [data-theme="ink"] .cat-character    { --cat-color: #e6b8c4; --cat-bg: rgba(230,184,196,0.08); --cat-border: rgba(230,184,196,0.3); }
+  [data-theme="ink"] .cat-location     { --cat-color: #a8c5d6; --cat-bg: rgba(168,197,214,0.08); --cat-border: rgba(168,197,214,0.3); }
+  [data-theme="ink"] .cat-organization { --cat-color: #e0bc8c; --cat-bg: rgba(224,188,140,0.08); --cat-border: rgba(224,188,140,0.3); }
+  [data-theme="ink"] .cat-item         { --cat-color: #c9b3d9; --cat-bg: rgba(201,179,217,0.08); --cat-border: rgba(201,179,217,0.3); }
+  [data-theme="ink"] .cat-term         { --cat-color: #b8d0a8; --cat-bg: rgba(184,208,168,0.08); --cat-border: rgba(184,208,168,0.3); }
+  [data-theme="ink"] .cat-event        { --cat-color: #e8cb85; --cat-bg: rgba(232,203,133,0.08); --cat-border: rgba(232,203,133,0.3); }
+  [data-theme="ink"] .cat-culture      { --cat-color: #d6a8bc; --cat-bg: rgba(214,168,188,0.08); --cat-border: rgba(214,168,188,0.3); }
+  [data-theme="ink"] .cat-ability      { --cat-color: #b8a8d6; --cat-bg: rgba(184,168,214,0.08); --cat-border: rgba(184,168,214,0.3); }
+  [data-theme="ink"] .cat-relationship { --cat-color: #e6b8c4; --cat-bg: rgba(230,184,196,0.08); --cat-border: rgba(230,184,196,0.3); }
+  [data-theme="ink"] .cat-romance      { --cat-color: #e8b0c2; --cat-bg: rgba(232,176,194,0.08); --cat-border: rgba(232,176,194,0.3); }
+  [data-theme="ink"] .cat-appearance   { --cat-color: #e6b3c5; --cat-bg: rgba(230,179,197,0.08); --cat-border: rgba(230,179,197,0.3); }
+  [data-theme="ink"] .cat-intimacy     { --cat-color: #e0a8be; --cat-bg: rgba(224,168,190,0.08); --cat-border: rgba(224,168,190,0.3); }
+  [data-theme="ink"] .cat-nsfw         { --cat-color: #d4a574; --cat-bg: rgba(212,165,116,0.1); --cat-border: var(--gold); }
+
+  /* ===== 🌊 粉藍療癒：藍調、柔和 ===== */
+  [data-theme="skyblue"] .cat-character    { --cat-color: #9fb5d0; --cat-bg: #eef3f9; --cat-border: #c8d6e5; }
+  [data-theme="skyblue"] .cat-location     { --cat-color: #7aa8c4; --cat-bg: #e8f2f7; --cat-border: #b8d4e2; }
+  [data-theme="skyblue"] .cat-organization { --cat-color: #b5a078; --cat-bg: #f4eee0; --cat-border: #ddd0ad; }
+  [data-theme="skyblue"] .cat-item         { --cat-color: #a89bc2; --cat-bg: #f0ecf4; --cat-border: #cec3dc; }
+  [data-theme="skyblue"] .cat-term         { --cat-color: #88b59a; --cat-bg: #ecf4ef; --cat-border: #c4dbcd; }
+  [data-theme="skyblue"] .cat-event        { --cat-color: #c0a880; --cat-bg: #f6eedb; --cat-border: #dfcfa8; }
+  [data-theme="skyblue"] .cat-culture      { --cat-color: #b090a8; --cat-bg: #f3ecf0; --cat-border: #d8c3d0; }
+  [data-theme="skyblue"] .cat-ability      { --cat-color: #8898c4; --cat-bg: #edf0f9; --cat-border: #b8c4e0; }
+  [data-theme="skyblue"] .cat-relationship { --cat-color: #9fa8c8; --cat-bg: #edf0f7; --cat-border: #c4cbdf; }
+  [data-theme="skyblue"] .cat-romance      { --cat-color: #b098b8; --cat-bg: #efeaf1; --cat-border: #d0c3d4; }
+  [data-theme="skyblue"] .cat-appearance   { --cat-color: #a898c0; --cat-bg: #f0ecf4; --cat-border: #cec3dc; }
+  [data-theme="skyblue"] .cat-intimacy     { --cat-color: #a090b0; --cat-bg: #efeaf1; --cat-border: #cbc2d1; }
+  [data-theme="skyblue"] .cat-nsfw         { --cat-color: #4a90c2; --cat-bg: #e8f2fa; --cat-border: var(--gold); }
+
+  /* ===== 🌿 薄荷抹茶：綠色調、柔和 ===== */
+  [data-theme="matcha"] .cat-character    { --cat-color: #b8a5a5; --cat-bg: #f3ece8; --cat-border: #dbc9c5; }
+  [data-theme="matcha"] .cat-location     { --cat-color: #8ab0b8; --cat-bg: #eaf1f2; --cat-border: #c2d7d9; }
+  [data-theme="matcha"] .cat-organization { --cat-color: #b5a078; --cat-bg: #f3ebd5; --cat-border: #d9c8a0; }
+  [data-theme="matcha"] .cat-item         { --cat-color: #a59bc0; --cat-bg: #eeebf3; --cat-border: #cbc4d8; }
+  [data-theme="matcha"] .cat-term         { --cat-color: #6a9c5b; --cat-bg: #e8f0e4; --cat-border: #c0d4b8; }
+  [data-theme="matcha"] .cat-event        { --cat-color: #c0a880; --cat-bg: #f4edd8; --cat-border: #dbc9a3; }
+  [data-theme="matcha"] .cat-culture      { --cat-color: #b098a8; --cat-bg: #f0e9ed; --cat-border: #d5c3ce; }
+  [data-theme="matcha"] .cat-ability      { --cat-color: #8898b0; --cat-bg: #ebeef3; --cat-border: #bfc8d4; }
+  [data-theme="matcha"] .cat-relationship { --cat-color: #b8a0a8; --cat-bg: #f2e8ec; --cat-border: #d9c3cc; }
+  [data-theme="matcha"] .cat-romance      { --cat-color: #b8a0b0; --cat-bg: #f2e8ed; --cat-border: #d9c3cf; }
+  [data-theme="matcha"] .cat-appearance   { --cat-color: #b0a8b8; --cat-bg: #eeebf0; --cat-border: #d1ccd6; }
+  [data-theme="matcha"] .cat-intimacy     { --cat-color: #a8a0b0; --cat-bg: #eeeaf0; --cat-border: #cfc8d3; }
+  [data-theme="matcha"] .cat-nsfw         { --cat-color: #6a9c5b; --cat-bg: #e8f0e4; --cat-border: var(--gold); }
+
+  /* ===== ☕ 奶茶焦糖：暖棕調 ===== */
+  [data-theme="milktea"] .cat-character    { --cat-color: #b08a7a; --cat-bg: #f4ebe3; --cat-border: #e0cab8; }
+  [data-theme="milktea"] .cat-location     { --cat-color: #8a9fa8; --cat-bg: #edf0f2; --cat-border: #c8d2d8; }
+  [data-theme="milktea"] .cat-organization { --cat-color: #a67c52; --cat-bg: #f2e6d2; --cat-border: #d8c099; }
+  [data-theme="milktea"] .cat-item         { --cat-color: #9a88a8; --cat-bg: #eeeaf0; --cat-border: #c8bfd1; }
+  [data-theme="milktea"] .cat-term         { --cat-color: #808c6a; --cat-bg: #ecefe2; --cat-border: #c4ccaf; }
+  [data-theme="milktea"] .cat-event        { --cat-color: #b8995c; --cat-bg: #f5edd0; --cat-border: #dbc891; }
+  [data-theme="milktea"] .cat-culture      { --cat-color: #a8849a; --cat-bg: #efe7ec; --cat-border: #d0bec8; }
+  [data-theme="milktea"] .cat-ability      { --cat-color: #7a8098; --cat-bg: #e8ebef; --cat-border: #bcc2d0; }
+  [data-theme="milktea"] .cat-relationship { --cat-color: #b08888; --cat-bg: #f2e8e8; --cat-border: #dcc7c7; }
+  [data-theme="milktea"] .cat-romance      { --cat-color: #b0888a; --cat-bg: #f2e8e9; --cat-border: #dcc7c9; }
+  [data-theme="milktea"] .cat-appearance   { --cat-color: #a88888; --cat-bg: #f0e8e8; --cat-border: #d6c7c7; }
+  [data-theme="milktea"] .cat-intimacy     { --cat-color: #a8807c; --cat-bg: #f0e6e2; --cat-border: #d5c2bd; }
+  [data-theme="milktea"] .cat-nsfw         { --cat-color: #86602f; --cat-bg: #f3e5cb; --cat-border: var(--gold); }
+
+  /* ===== ⚪ 極簡白灰：單色灰階 ===== */
+  [data-theme="mono"] .cat-character,
+  [data-theme="mono"] .cat-location,
+  [data-theme="mono"] .cat-organization,
+  [data-theme="mono"] .cat-item,
+  [data-theme="mono"] .cat-term,
+  [data-theme="mono"] .cat-event,
+  [data-theme="mono"] .cat-culture,
+  [data-theme="mono"] .cat-ability,
+  [data-theme="mono"] .cat-relationship,
+  [data-theme="mono"] .cat-romance,
+  [data-theme="mono"] .cat-appearance,
+  [data-theme="mono"] .cat-intimacy {
+    --cat-color: #666;
+    --cat-bg: #f5f5f5;
+    --cat-border: #d8d8d8;
+  }
+  [data-theme="mono"] .cat-nsfw {
+    --cat-color: #000;
+    --cat-bg: #f0f0f0;
+    --cat-border: #222;
+  }
 
   /* NSFW 類別 chip 的特殊樣式 */
   .nsfw-chip {
