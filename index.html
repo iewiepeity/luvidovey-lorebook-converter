@@ -1853,6 +1853,394 @@
       min-width: 0;
     }
   }
+
+  /* ============================================
+     📱 完整響應式設計
+     ============================================ */
+
+  /* 平板以下（含手機） - 768px */
+  @media (max-width: 900px) {
+    /* 頂部導航 */
+    .top-nav {
+      padding: 14px 20px;
+    }
+    .logo-text {
+      font-size: 12px;
+      letter-spacing: 4px;
+      padding-left: 10px;
+    }
+    .theme-trigger {
+      padding: 7px 14px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      gap: 8px;
+    }
+
+    /* Hero 區 */
+    .hero {
+      padding: 60px 24px 50px;
+    }
+    .hero-title-cn {
+      letter-spacing: 8px;
+      padding-left: 8px;
+    }
+    .hero-meta-line {
+      flex: 0 1 40px;
+    }
+    .hero-meta-text {
+      font-size: 11px;
+      letter-spacing: 2px;
+    }
+    .hero-desc {
+      font-size: 13px;
+    }
+    .hero-desc-cn {
+      font-size: 12px;
+      letter-spacing: 3px;
+    }
+
+    /* 主容器 改為單欄 */
+    .container {
+      padding: 30px 20px 50px;
+      gap: 24px;
+    }
+
+    /* Panel 內縮 */
+    .panel {
+      padding: 28px 22px;
+    }
+    .panel-header {
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .panel-num {
+      font-size: 32px;
+    }
+    .panel-title {
+      font-size: 16px;
+      letter-spacing: 4px;
+      padding-left: 10px;
+    }
+    .panel-hint {
+      width: 100%;
+      text-align: right;
+      margin-left: 0;
+      font-size: 11px;
+    }
+
+    /* 選項區：標籤改上下排列 */
+    .option-group {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .option-label {
+      text-align: left;
+      padding-top: 0;
+      min-width: 0;
+      font-size: 10px;
+      letter-spacing: 3px;
+    }
+    .option-label::after {
+      display: none;
+    }
+    .cat-chip-wrap {
+      gap: 6px;
+    }
+    .chip {
+      padding: 6px 12px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+    }
+
+    /* Toggle 獨立一行 */
+    .toggle-switch {
+      gap: 12px;
+    }
+    .toggle-label {
+      font-size: 11px;
+    }
+
+    /* 輸入區 */
+    textarea.input-area {
+      min-height: 240px;
+      padding: 18px;
+      font-size: 13px;
+      line-height: 1.9;
+    }
+
+    /* API key 區 */
+    .api-key-box {
+      padding: 20px 16px 18px;
+    }
+    .api-key-input-wrap {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .btn-save-key {
+      padding: 10px;
+      letter-spacing: 3px;
+    }
+    .btn-save-key:hover {
+      letter-spacing: 4px;
+    }
+
+    /* 主按鈕 */
+    .btn-primary {
+      padding: 16px 12px;
+      font-size: 13px;
+      letter-spacing: 8px;
+    }
+    .btn-primary:hover {
+      letter-spacing: 10px;
+    }
+    .btn-primary::before,
+    .btn-primary::after {
+      width: 16px;
+      margin: 0 10px 3px;
+    }
+
+    /* 模式切換 */
+    .mode-tab {
+      font-size: 12px;
+      letter-spacing: 4px;
+      padding: 12px 8px;
+    }
+    .mode-tab.active {
+      letter-spacing: 5px;
+    }
+
+    /* 結果卡片 */
+    .item-card {
+      padding: 22px 20px 20px;
+      margin-bottom: 18px;
+    }
+    .item-header {
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+    }
+    .item-index {
+      font-size: 22px;
+      min-width: 32px;
+    }
+    .item-title-input {
+      font-size: 15px;
+      letter-spacing: 2px;
+      min-width: 100px;
+    }
+    .item-category-badge {
+      font-size: 9px;
+      letter-spacing: 2px;
+      padding: 2px 8px;
+    }
+    .item-section-label {
+      font-size: 9px;
+      letter-spacing: 3px;
+    }
+    .item-textarea {
+      min-height: 110px;
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.9;
+    }
+    .item-actions {
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .btn-copy {
+      padding: 8px 20px;
+      font-size: 11px;
+      letter-spacing: 4px;
+    }
+    .btn-copy:hover {
+      letter-spacing: 5px;
+    }
+    .btn-delete {
+      font-size: 10px;
+    }
+
+    /* 建議關鍵字 */
+    .suggested-chip {
+      font-size: 10px;
+      padding: 2px 8px;
+    }
+    .keyword-tag {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+    }
+    .keyword-input {
+      width: 90px;
+    }
+
+    /* Footer */
+    .footer-note {
+      padding: 40px 20px;
+    }
+    .footer-logo {
+      width: 56px;
+      height: 56px;
+    }
+
+    /* Toast 完整顯示在螢幕內 */
+    .toast {
+      left: 20px;
+      right: 20px;
+      transform: translateY(100px);
+      bottom: 20px;
+      padding: 12px 20px;
+      font-size: 12px;
+      letter-spacing: 3px;
+    }
+    .toast.show {
+      transform: translateY(0);
+    }
+    .toast::before,
+    .toast::after {
+      width: 8px;
+      margin: 0 8px 3px;
+    }
+  }
+
+  /* 手機直向 - 480px */
+  @media (max-width: 480px) {
+    /* 頂部導航：logo 更簡潔 */
+    .top-nav {
+      padding: 12px 16px;
+    }
+    .nav-logo {
+      gap: 10px;
+    }
+    .logo-icon {
+      font-size: 18px;
+    }
+    .logo-text {
+      font-size: 11px;
+      letter-spacing: 3px;
+      padding-left: 10px;
+    }
+    .theme-trigger {
+      padding: 6px 12px;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+    }
+    .theme-trigger .theme-swatch {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 44px 16px 40px;
+    }
+    .hero-title {
+      font-size: 32px;
+    }
+    .hero-title-cn {
+      letter-spacing: 6px;
+      padding-left: 6px;
+    }
+    .hero-title-en {
+      font-size: 0.6em;
+    }
+    .hero-title-en::before,
+    .hero-title-en::after {
+      width: 20px;
+    }
+    .hero-meta {
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .hero-meta-line {
+      flex: 0 1 30px;
+    }
+    .hero-meta-text {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+    }
+    .hero-desc {
+      font-size: 12px;
+    }
+    .hero-desc-cn {
+      font-size: 11px;
+      letter-spacing: 2px;
+    }
+
+    /* 主容器 */
+    .container {
+      padding: 24px 14px 40px;
+      gap: 20px;
+    }
+
+    /* Panel */
+    .panel {
+      padding: 24px 18px;
+    }
+    .panel-num {
+      font-size: 28px;
+    }
+    .panel-title {
+      font-size: 15px;
+      letter-spacing: 3px;
+    }
+
+    /* 主題下拉選單全寬 */
+    .theme-menu {
+      min-width: 180px;
+    }
+    .theme-option {
+      padding: 9px 12px;
+      font-size: 12px;
+    }
+
+    /* 結果卡片 */
+    .item-card {
+      padding: 20px 16px 18px;
+    }
+    .item-index {
+      font-size: 20px;
+      min-width: 28px;
+    }
+    .item-title-input {
+      font-size: 14px;
+    }
+
+    /* Empty state */
+    .empty-state {
+      padding: 60px 16px;
+    }
+    .empty-state-text {
+      font-size: 13px;
+      letter-spacing: 4px;
+    }
+  }
+
+  /* 觸控裝置優化：移除 hover 依賴 */
+  @media (hover: none) {
+    .item-card::before {
+      display: none;
+    }
+    .btn-primary:hover,
+    .btn-copy:hover,
+    .btn-save-key:hover,
+    .mode-tab.active {
+      /* 觸控裝置移除字距變化效果，避免按下去 layout shift */
+      letter-spacing: inherit;
+    }
+  }
+
+  /* 超寬桌機 - 1400px+ */
+  @media (min-width: 1400px) {
+    .container {
+      max-width: 1500px;
+      padding: 60px 40px 100px;
+      gap: 48px;
+    }
+    .panel {
+      padding: 48px 40px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -2068,7 +2456,6 @@
     <div class="footer-links">
       <a href="https://abr.ge/slndkw" target="_blank" class="footer-link">
         <span class="footer-link-label">LoveyDovey</span>
-        <span class="footer-link-sub">加入卿卿我我，獲得免費點數</span>
       </a>
     </div>
   </div>
