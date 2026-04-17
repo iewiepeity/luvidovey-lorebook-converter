@@ -1257,6 +1257,365 @@
     border-bottom: 1px dashed var(--ink-line);
   }
 
+  /* ========== 工具列：搜尋 / 篩選 / 批次 ========== */
+  .item-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed var(--ink-line);
+  }
+
+  .toolbar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  /* 搜尋框 */
+  .search-box {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 10px 40px 10px 16px;
+    background: var(--ink);
+    border: 1px solid var(--ink-line);
+    color: var(--paper);
+    font-family: var(--serif);
+    font-size: 13px;
+    letter-spacing: 1px;
+    border-radius: 2px;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .search-input::placeholder {
+    color: var(--paper-soft);
+    opacity: 0.5;
+    font-family: var(--italic);
+    font-style: italic;
+  }
+
+  .search-clear {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--paper-soft);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+  }
+
+  .search-clear:hover { color: var(--gold); }
+
+  /* 類別篩選列 */
+  .filter-row {
+    gap: 6px;
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px solid var(--ink-line);
+    color: var(--paper-soft);
+    font-family: var(--serif);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .filter-chip:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .filter-chip.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--card-bg);
+  }
+
+  .filter-chip-count {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 10px;
+    opacity: 0.75;
+  }
+
+  /* 批次列 */
+  .batch-row {
+    padding: 10px 14px;
+    background: var(--ink);
+    border: 1px solid var(--gold-dim);
+    border-radius: 2px;
+  }
+
+  .batch-label {
+    font-family: var(--serif);
+    font-size: 12px;
+    color: var(--paper);
+    letter-spacing: 1px;
+    margin-right: auto;
+  }
+
+  .batch-label strong {
+    color: var(--gold);
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 15px;
+    padding: 0 4px;
+  }
+
+  .btn-sm {
+    padding: 6px 14px;
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+
+  .btn-danger {
+    color: var(--vermilion) !important;
+    border-color: var(--vermilion) !important;
+  }
+
+  .btn-danger:hover {
+    background: var(--vermilion) !important;
+    color: var(--card-bg) !important;
+  }
+
+  /* 批次改類別下拉 */
+  .batch-dropdown {
+    position: relative;
+  }
+
+  .batch-cat-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--card-bg);
+    border: 1px solid var(--ink-line);
+    border-radius: 2px;
+    padding: 6px;
+    box-shadow: 0 10px 30px var(--shadow-color-strong);
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: all 0.2s;
+    z-index: 20;
+  }
+
+  .batch-dropdown.open .batch-cat-menu {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .batch-cat-label {
+    font-family: var(--serif);
+    font-size: 10px;
+    color: var(--paper-soft);
+    letter-spacing: 3px;
+    padding: 6px 10px;
+  }
+
+  .batch-cat-option {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    color: var(--paper);
+    font-family: var(--serif);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s;
+  }
+
+  .batch-cat-option:hover {
+    background: var(--ink-soft);
+    color: var(--gold);
+  }
+
+  /* ========== 類別分組折疊 ========== */
+  .category-group {
+    margin-bottom: 28px;
+  }
+
+  .category-group-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 4px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--ink-line);
+    cursor: pointer;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+
+  .category-group-header:hover {
+    border-bottom-color: var(--gold);
+  }
+
+  .category-group-toggle {
+    font-size: 11px;
+    color: var(--gold);
+    width: 12px;
+    font-family: var(--display);
+  }
+
+  .category-group-label {
+    font-family: var(--serif);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    color: var(--paper);
+    margin-right: auto;
+  }
+
+  .category-group-count {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--gold);
+    opacity: 0.8;
+  }
+
+  .category-group.collapsed .category-group-body {
+    display: none;
+  }
+
+  /* ========== 條目卡片：checkbox + 拖曳 + 選取狀態 ========== */
+  .item-drag-handle {
+    color: var(--paper-soft);
+    opacity: 0.4;
+    cursor: grab;
+    font-size: 14px;
+    letter-spacing: -3px;
+    padding: 2px 4px;
+    user-select: none;
+  }
+
+  .item-drag-handle:hover { opacity: 0.8; }
+  .item-drag-handle:active { cursor: grabbing; }
+
+  .item-checkbox-wrap {
+    position: relative;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .item-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .item-checkbox-visual {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--ink-line);
+    border-radius: 2px;
+    background: transparent;
+    transition: all 0.2s;
+  }
+
+  .item-checkbox-wrap:hover .item-checkbox-visual {
+    border-color: var(--gold-dim);
+  }
+
+  .item-checkbox:checked + .item-checkbox-visual {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .item-checkbox:checked + .item-checkbox-visual::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--card-bg);
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  .item-card.selected {
+    border-color: var(--gold) !important;
+    background: var(--ink);
+  }
+
+  .item-card.selected::before {
+    height: 100% !important;
+  }
+
+  /* 拖曳中 */
+  .item-card.dragging {
+    opacity: 0.4;
+    transform: scale(0.98);
+  }
+
+  .item-card.drag-over {
+    border-color: var(--gold) !important;
+    border-style: dashed !important;
+    background: var(--ink-soft);
+  }
+
+  /* 無結果 */
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--paper-soft);
+  }
+
+  .no-results-text {
+    font-family: var(--serif);
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: var(--paper);
+    opacity: 0.6;
+    margin-bottom: 6px;
+  }
+
+  .no-results-sub {
+    font-family: var(--italic);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+
   /* 匯出下拉 */
   .export-dropdown {
     position: relative;
@@ -3643,7 +4002,14 @@ let state = {
   categories: ['character', 'location', 'organization', 'item', 'term', 'event', 'culture', 'ability',
                'relationship', 'romance', 'appearance', 'intimacy', 'nsfw'],
   customCategories: JSON.parse(localStorage.getItem('custom_categories') || '[]'),
-  aiAutoExpand: localStorage.getItem('ai_auto_expand') !== 'false'
+  aiAutoExpand: localStorage.getItem('ai_auto_expand') !== 'false',
+  // UI 篩選與操作狀態
+  ui: {
+    searchQuery: '',
+    filterCategory: 'all',  // 'all' / category key
+    selectedIds: new Set(), // 被勾選的條目 idx
+    collapsedCategories: new Set() // 折疊的類別 keys
+  }
 };
 
 // 預設類別中文對照（內建）
@@ -4986,7 +5352,7 @@ function extractKeywords(content, title) {
 
 // ============ 渲染結果 ============
 function renderResults() {
-  if (state.items.length === 0) {
+  if (!state.items || state.items.length === 0) {
     resultsContainer.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-divider"></div>
@@ -4999,7 +5365,45 @@ function renderResults() {
 
   itemCount.textContent = `共 ${state.items.length} 項`;
 
-  let html = `
+  // 先渲染工具列（搜尋 / 篩選 / 批次）+ 動作列
+  const toolbar = renderToolbar();
+  const actionBar = renderActionBar();
+
+  // 套用搜尋/篩選後的條目
+  const filteredIdxs = filterItems();
+
+  // 按類別分組渲染
+  const itemsHtml = renderGroupedItems(filteredIdxs);
+
+  resultsContainer.innerHTML = actionBar + toolbar + itemsHtml;
+  attachResultListeners();
+}
+
+// ============ 套用搜尋 + 類別篩選 ============
+function filterItems() {
+  const q = state.ui.searchQuery.trim().toLowerCase();
+  const cat = state.ui.filterCategory;
+  const idxs = [];
+  state.items.forEach((item, idx) => {
+    // 類別篩選
+    if (cat !== 'all' && item.category !== cat) return;
+    // 搜尋
+    if (q) {
+      const hay = [
+        item.title || '',
+        (item.keywords || []).join(' '),
+        item.content || ''
+      ].join(' ').toLowerCase();
+      if (!hay.includes(q)) return;
+    }
+    idxs.push(idx);
+  });
+  return idxs;
+}
+
+// ============ 動作列（匯出/複製/清空） ============
+function renderActionBar() {
+  return `
     <div class="global-actions">
       <button class="btn-secondary" id="copyAllBtn">複製全部</button>
       <div class="export-dropdown">
@@ -5034,100 +5438,218 @@ function renderResults() {
       <button class="btn-secondary" id="clearBtn">全部清除</button>
     </div>
   `;
+}
 
-  state.items.forEach((item, idx) => {
-    const titleLen = item.title.length;
-    const contentLen = item.content.length;
-    const keywordCount = item.keywords.length;
+// ============ 工具列（搜尋 + 類別篩選 + 批次操作） ============
+function renderToolbar() {
+  const q = state.ui.searchQuery;
+  const selectedCat = state.ui.filterCategory;
+  const selectedCount = state.ui.selectedIds.size;
 
-    const titleClass = titleLen > 50 ? 'over' : (titleLen > 0 ? 'good' : '');
-    const contentClass = contentLen > 2000 ? 'over' : (contentLen > 0 ? 'good' : '');
-    const kwClass = keywordCount > 10 ? 'over' : (keywordCount > 0 ? 'good' : '');
-
-    const suggestedHtml = item.suggested
-      .filter(s => !item.keywords.includes(s))
-      .map(s => `<span class="suggested-chip" data-idx="${idx}" data-word="${escapeHtml(s)}">+ ${escapeHtml(s)}</span>`)
-      .join('');
-
-    const keywordsHtml = item.keywords.map((k, ki) => `
-      <span class="keyword-tag">
-        ${escapeHtml(k)}
-        <span class="remove" data-idx="${idx}" data-ki="${ki}">×</span>
-      </span>
-    `).join('');
-
-    // 判斷是否為預定義類別
-    const isBuiltinCat = item.category && BUILTIN_CATEGORY_LABELS[item.category];
-    const isCustomCat = item.category && state.customCategories.find(c => c.key === item.category);
-    const isKnownCat = isBuiltinCat || isCustomCat;
-
-    // 取得類別顯示文字：內建→中文名；自訂→使用者設定的名稱；AI 擴充的新類別→直接用 key 顯示
-    let catLabel = '';
-    if (item.category) {
-      catLabel = getCategoryLabel(item.category);
-      // 如果是 AI 新產生的類別（不在任何清單），美化一下顯示
-      if (!isKnownCat) {
-        catLabel = item.category.replace(/_/g, ' ');
-      }
-    }
-
-    const categoryBadge = item.category
-      ? `<span class="item-category-badge ${isBuiltinCat ? 'cat-' + item.category : 'cat-custom'}">${escapeHtml(catLabel)}</span>`
-      : '';
-
-    html += `
-      <div class="item-card" data-idx="${idx}">
-        <div class="item-header">
-          <span class="item-index">${String(idx + 1).padStart(2, '0')}</span>
-          <input type="text" class="item-title-input" data-idx="${idx}"
-            value="${escapeHtml(item.title)}" placeholder="項目標題" maxlength="50">
-          ${categoryBadge}
-        </div>
-
-        <div class="item-section">
-          <div class="item-section-label">
-            <span>標題字數</span>
-            <span class="count-badge ${titleClass}">${titleLen} / 50</span>
-          </div>
-        </div>
-
-        <div class="item-section">
-          <div class="item-section-label">
-            <span>關鍵字</span>
-            <span class="count-badge ${kwClass}">${keywordCount} / 10</span>
-          </div>
-          <div class="keywords-wrap">
-            ${keywordsHtml}
-            <div class="keyword-add">
-              <input type="text" class="keyword-input" data-idx="${idx}"
-                placeholder="+ 新增" maxlength="20">
-            </div>
-          </div>
-          ${item.suggested.length > 0 ? `
-            <div class="suggested-keywords">
-              <div class="suggested-label">— 建議關鍵字（點選加入） —</div>
-              ${suggestedHtml}
-            </div>` : ''}
-        </div>
-
-        <div class="item-section">
-          <div class="item-section-label">
-            <span>內容</span>
-            <span class="count-badge ${contentClass}">${contentLen} / 2000</span>
-          </div>
-          <textarea class="item-textarea" data-idx="${idx}" maxlength="2000">${escapeHtml(item.content)}</textarea>
-        </div>
-
-        <div class="item-actions">
-          <button class="btn-delete" data-idx="${idx}">移除此項</button>
-          <button class="btn-copy" data-idx="${idx}">複製此項</button>
-        </div>
-      </div>
-    `;
+  // 統計每個類別的條目數
+  const catCounts = {};
+  state.items.forEach(item => {
+    const k = item.category || '_none';
+    catCounts[k] = (catCounts[k] || 0) + 1;
   });
 
-  resultsContainer.innerHTML = html;
-  attachResultListeners();
+  // 建立類別篩選按鈕列表（只顯示有條目的類別）
+  const usedCats = Object.keys(catCounts);
+  const catFilterBtns = usedCats.map(key => {
+    const label = key === '_none' ? '未分類' : getCategoryLabel(key);
+    const active = selectedCat === key ? 'active' : '';
+    return `<button class="filter-chip ${active}" data-filter="${escapeHtml(key)}">${escapeHtml(label)} <span class="filter-chip-count">${catCounts[key]}</span></button>`;
+  }).join('');
+
+  // 收集所有自訂 + 內建類別作為批次改類別選單
+  const allCatOptions = [
+    ...Object.entries(BUILTIN_CATEGORY_LABELS).map(([k, v]) => ({ key: k, label: v })),
+    ...state.customCategories.map(c => ({ key: c.key, label: c.label }))
+  ];
+
+  const batchOptionsHtml = allCatOptions
+    .map(c => `<button class="batch-cat-option" data-cat="${escapeHtml(c.key)}">${escapeHtml(c.label)}</button>`)
+    .join('');
+
+  return `
+    <div class="item-toolbar">
+      <div class="toolbar-row">
+        <div class="search-box">
+          <input type="text" class="search-input" id="searchInput"
+            placeholder="搜尋標題、關鍵字、內容⋯⋯" value="${escapeHtml(q)}">
+          ${q ? `<button class="search-clear" id="searchClear">×</button>` : ''}
+        </div>
+      </div>
+      <div class="toolbar-row filter-row">
+        <button class="filter-chip ${selectedCat === 'all' ? 'active' : ''}" data-filter="all">
+          全部 <span class="filter-chip-count">${state.items.length}</span>
+        </button>
+        ${catFilterBtns}
+      </div>
+      ${selectedCount > 0 ? `
+      <div class="toolbar-row batch-row">
+        <span class="batch-label">已選 <strong>${selectedCount}</strong> 項</span>
+        <div class="batch-dropdown">
+          <button class="btn-secondary btn-sm" id="batchCatBtn">改類別 ▾</button>
+          <div class="batch-cat-menu" id="batchCatMenu">
+            <div class="batch-cat-label">改為：</div>
+            ${batchOptionsHtml}
+            <div class="export-menu-divider"></div>
+            <button class="batch-cat-option" data-cat="">清除類別</button>
+          </div>
+        </div>
+        <button class="btn-secondary btn-sm btn-danger" id="batchDeleteBtn">刪除所選</button>
+        <button class="btn-secondary btn-sm" id="batchClearSelBtn">取消選取</button>
+      </div>` : ''}
+    </div>
+  `;
+}
+
+// ============ 按類別分組渲染條目 ============
+function renderGroupedItems(filteredIdxs) {
+  if (filteredIdxs.length === 0) {
+    return `
+      <div class="no-results">
+        <div class="no-results-text">沒有符合的條目</div>
+        <div class="no-results-sub">試試調整搜尋字或類別</div>
+      </div>`;
+  }
+
+  // 如果有篩選或搜尋，就不分組（直接扁平列出）
+  const flatMode = state.ui.searchQuery.trim() !== '' || state.ui.filterCategory !== 'all';
+
+  if (flatMode) {
+    return filteredIdxs.map(idx => renderSingleItem(idx)).join('');
+  }
+
+  // 分組模式：按原始順序分組，但同類別的會被放在一起
+  // 改為「依出現順序保留 + 類別折疊」，不打亂使用者排序
+  // → 用 data-group 分隔而非真的分組排序
+  const groups = {};
+  const groupOrder = [];
+  filteredIdxs.forEach(idx => {
+    const cat = state.items[idx].category || '_none';
+    if (!groups[cat]) {
+      groups[cat] = [];
+      groupOrder.push(cat);
+    }
+    groups[cat].push(idx);
+  });
+
+  return groupOrder.map(cat => {
+    const label = cat === '_none' ? '未分類' : getCategoryLabel(cat);
+    const isCollapsed = state.ui.collapsedCategories.has(cat);
+    const itemCount = groups[cat].length;
+    const itemsHtml = isCollapsed ? '' : groups[cat].map(idx => renderSingleItem(idx)).join('');
+
+    return `
+      <div class="category-group ${isCollapsed ? 'collapsed' : ''}">
+        <button class="category-group-header" data-cat="${escapeHtml(cat)}">
+          <span class="category-group-toggle">${isCollapsed ? '▸' : '▾'}</span>
+          <span class="category-group-label">${escapeHtml(label)}</span>
+          <span class="category-group-count">${itemCount}</span>
+        </button>
+        <div class="category-group-body">${itemsHtml}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============ 單一條目渲染 ============
+function renderSingleItem(idx) {
+  const item = state.items[idx];
+  const titleLen = item.title.length;
+  const contentLen = item.content.length;
+  const keywordCount = item.keywords.length;
+
+  const titleClass = titleLen > 50 ? 'over' : (titleLen > 0 ? 'good' : '');
+  const contentClass = contentLen > 2000 ? 'over' : (contentLen > 0 ? 'good' : '');
+  const kwClass = keywordCount > 10 ? 'over' : (keywordCount > 0 ? 'good' : '');
+
+  const suggestedHtml = (item.suggested || [])
+    .filter(s => !item.keywords.includes(s))
+    .map(s => `<span class="suggested-chip" data-idx="${idx}" data-word="${escapeHtml(s)}">+ ${escapeHtml(s)}</span>`)
+    .join('');
+
+  const keywordsHtml = item.keywords.map((k, ki) => `
+    <span class="keyword-tag">
+      ${escapeHtml(k)}
+      <span class="remove" data-idx="${idx}" data-ki="${ki}">×</span>
+    </span>
+  `).join('');
+
+  const isBuiltinCat = item.category && BUILTIN_CATEGORY_LABELS[item.category];
+  const isCustomCat = item.category && state.customCategories.find(c => c.key === item.category);
+  const isKnownCat = isBuiltinCat || isCustomCat;
+
+  let catLabel = '';
+  if (item.category) {
+    catLabel = getCategoryLabel(item.category);
+    if (!isKnownCat) {
+      catLabel = item.category.replace(/_/g, ' ');
+    }
+  }
+
+  const categoryBadge = item.category
+    ? `<span class="item-category-badge ${isBuiltinCat ? 'cat-' + item.category : 'cat-custom'}">${escapeHtml(catLabel)}</span>`
+    : '';
+
+  const isSelected = state.ui.selectedIds.has(idx);
+
+  return `
+    <div class="item-card ${isSelected ? 'selected' : ''}" data-idx="${idx}" draggable="true">
+      <div class="item-header">
+        <span class="item-drag-handle" title="拖曳排序">⋮⋮</span>
+        <label class="item-checkbox-wrap" title="選取此項">
+          <input type="checkbox" class="item-checkbox" data-idx="${idx}" ${isSelected ? 'checked' : ''}>
+          <span class="item-checkbox-visual"></span>
+        </label>
+        <span class="item-index">${String(idx + 1).padStart(2, '0')}</span>
+        <input type="text" class="item-title-input" data-idx="${idx}"
+          value="${escapeHtml(item.title)}" placeholder="項目標題" maxlength="50">
+        ${categoryBadge}
+      </div>
+
+      <div class="item-section">
+        <div class="item-section-label">
+          <span>標題字數</span>
+          <span class="count-badge ${titleClass}">${titleLen} / 50</span>
+        </div>
+      </div>
+
+      <div class="item-section">
+        <div class="item-section-label">
+          <span>關鍵字</span>
+          <span class="count-badge ${kwClass}">${keywordCount} / 10</span>
+        </div>
+        <div class="keywords-wrap">
+          ${keywordsHtml}
+          <div class="keyword-add">
+            <input type="text" class="keyword-input" data-idx="${idx}"
+              placeholder="+ 新增" maxlength="20">
+          </div>
+        </div>
+        ${(item.suggested || []).length > 0 ? `
+          <div class="suggested-keywords">
+            <div class="suggested-label">— 建議關鍵字（點選加入） —</div>
+            ${suggestedHtml}
+          </div>` : ''}
+      </div>
+
+      <div class="item-section">
+        <div class="item-section-label">
+          <span>內容</span>
+          <span class="count-badge ${contentClass}">${contentLen} / 2000</span>
+        </div>
+        <textarea class="item-textarea" data-idx="${idx}" maxlength="2000">${escapeHtml(item.content)}</textarea>
+      </div>
+
+      <div class="item-actions">
+        <button class="btn-delete" data-idx="${idx}">移除此項</button>
+        <button class="btn-copy" data-idx="${idx}">複製此項</button>
+      </div>
+    </div>
+  `;
 }
 
 // ============ 綁定結果區事件 ============
@@ -5286,8 +5808,232 @@ function attachResultListeners() {
   document.getElementById('clearBtn')?.addEventListener('click', () => {
     if (confirm('清空整個 Lorebook 設定集？')) {
       state.items = [];
+      state.ui.selectedIds.clear();
       renderResults();
     }
+  });
+
+  // ========== 新增：搜尋 ==========
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      state.ui.searchQuery = e.target.value;
+      // 只重繪條目區，不重繪整個工具列（保持游標位置）
+      renderResultsPartial();
+    });
+  }
+  document.getElementById('searchClear')?.addEventListener('click', () => {
+    state.ui.searchQuery = '';
+    renderResults();
+  });
+
+  // ========== 新增：類別篩選 ==========
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      state.ui.filterCategory = chip.dataset.filter;
+      renderResults();
+    });
+  });
+
+  // ========== 新增：類別折疊 ==========
+  document.querySelectorAll('.category-group-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const cat = header.dataset.cat;
+      if (state.ui.collapsedCategories.has(cat)) {
+        state.ui.collapsedCategories.delete(cat);
+      } else {
+        state.ui.collapsedCategories.add(cat);
+      }
+      renderResults();
+    });
+  });
+
+  // ========== 新增：條目勾選 ==========
+  document.querySelectorAll('.item-checkbox').forEach(cb => {
+    cb.addEventListener('change', (e) => {
+      const idx = +e.target.dataset.idx;
+      if (e.target.checked) {
+        state.ui.selectedIds.add(idx);
+      } else {
+        state.ui.selectedIds.delete(idx);
+      }
+      // 只更新工具列與卡片狀態，不重繪條目
+      const card = document.querySelector(`.item-card[data-idx="${idx}"]`);
+      if (card) card.classList.toggle('selected', e.target.checked);
+      renderToolbarPartial();
+    });
+  });
+
+  // ========== 新增：批次操作 ==========
+  // 取消選取
+  document.getElementById('batchClearSelBtn')?.addEventListener('click', () => {
+    state.ui.selectedIds.clear();
+    renderResults();
+  });
+
+  // 批次刪除
+  document.getElementById('batchDeleteBtn')?.addEventListener('click', () => {
+    const count = state.ui.selectedIds.size;
+    if (count === 0) return;
+    if (!confirm(`確定刪除選取的 ${count} 項？`)) return;
+    // 從大到小 idx 刪除避免索引偏移
+    const idxsToDelete = [...state.ui.selectedIds].sort((a, b) => b - a);
+    idxsToDelete.forEach(idx => state.items.splice(idx, 1));
+    state.ui.selectedIds.clear();
+    renderResults();
+    showToast(`已刪除 ${count} 項`);
+  });
+
+  // 改類別下拉
+  const batchCatBtn = document.getElementById('batchCatBtn');
+  const batchCatDropdown = document.querySelector('.batch-dropdown');
+  batchCatBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    batchCatDropdown?.classList.toggle('open');
+  });
+  document.querySelectorAll('.batch-cat-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const newCat = opt.dataset.cat || null;
+      state.ui.selectedIds.forEach(idx => {
+        state.items[idx].category = newCat;
+      });
+      const count = state.ui.selectedIds.size;
+      state.ui.selectedIds.clear();
+      renderResults();
+      showToast(`已將 ${count} 項改為${newCat ? `「${getCategoryLabel(newCat)}」` : '未分類'}`);
+    });
+  });
+
+  // ========== 新增：拖曳排序 ==========
+  let draggedIdx = null;
+  document.querySelectorAll('.item-card').forEach(card => {
+    card.addEventListener('dragstart', (e) => {
+      // 避免從 textarea/input 拖曳造成誤觸
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+        e.preventDefault();
+        return;
+      }
+      draggedIdx = +card.dataset.idx;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      // Firefox 需要 setData
+      try { e.dataTransfer.setData('text/plain', draggedIdx); } catch (_) {}
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      document.querySelectorAll('.item-card.drag-over').forEach(c => c.classList.remove('drag-over'));
+      draggedIdx = null;
+    });
+    card.addEventListener('dragover', (e) => {
+      if (draggedIdx === null) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave', () => {
+      card.classList.remove('drag-over');
+    });
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      const targetIdx = +card.dataset.idx;
+      if (draggedIdx === null || draggedIdx === targetIdx) return;
+      // 搬移
+      const [movedItem] = state.items.splice(draggedIdx, 1);
+      // 因為拆出後索引會改變，重新計算目標位置
+      const adjustedTarget = draggedIdx < targetIdx ? targetIdx - 1 : targetIdx;
+      state.items.splice(adjustedTarget, 0, movedItem);
+      // 重設選取（索引已變）
+      state.ui.selectedIds.clear();
+      renderResults();
+    });
+  });
+}
+
+// ============ 部分重繪（保留搜尋游標位置） ============
+function renderResultsPartial() {
+  // 只重繪條目區，不重繪 toolbar
+  const resultsOld = resultsContainer;
+  const toolbarOld = resultsOld.querySelector('.item-toolbar');
+  const filteredIdxs = filterItems();
+  const itemsHtml = renderGroupedItems(filteredIdxs);
+
+  // 清空現有條目 + 結果狀態
+  const groups = resultsOld.querySelectorAll('.category-group, .item-card, .no-results');
+  groups.forEach(g => g.remove());
+
+  // 插入新條目 HTML
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = itemsHtml;
+  while (tempDiv.firstChild) {
+    resultsOld.appendChild(tempDiv.firstChild);
+  }
+
+  attachResultListeners();
+}
+
+// 只更新 toolbar 的批次區（勾選變動時）
+function renderToolbarPartial() {
+  const oldToolbar = resultsContainer.querySelector('.item-toolbar');
+  if (!oldToolbar) return;
+  const newToolbarHtml = renderToolbar();
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = newToolbarHtml;
+  oldToolbar.replaceWith(tempDiv.firstElementChild);
+
+  // 重新綁定工具列事件
+  attachToolbarOnlyListeners();
+}
+
+function attachToolbarOnlyListeners() {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      state.ui.searchQuery = e.target.value;
+      renderResultsPartial();
+    });
+  }
+  document.getElementById('searchClear')?.addEventListener('click', () => {
+    state.ui.searchQuery = '';
+    renderResults();
+  });
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      state.ui.filterCategory = chip.dataset.filter;
+      renderResults();
+    });
+  });
+  document.getElementById('batchClearSelBtn')?.addEventListener('click', () => {
+    state.ui.selectedIds.clear();
+    renderResults();
+  });
+  document.getElementById('batchDeleteBtn')?.addEventListener('click', () => {
+    const count = state.ui.selectedIds.size;
+    if (count === 0) return;
+    if (!confirm(`確定刪除選取的 ${count} 項？`)) return;
+    const idxsToDelete = [...state.ui.selectedIds].sort((a, b) => b - a);
+    idxsToDelete.forEach(idx => state.items.splice(idx, 1));
+    state.ui.selectedIds.clear();
+    renderResults();
+    showToast(`已刪除 ${count} 項`);
+  });
+  const batchCatBtn = document.getElementById('batchCatBtn');
+  const batchCatDropdown = document.querySelector('.batch-dropdown');
+  batchCatBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    batchCatDropdown?.classList.toggle('open');
+  });
+  document.querySelectorAll('.batch-cat-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const newCat = opt.dataset.cat || null;
+      state.ui.selectedIds.forEach(idx => {
+        state.items[idx].category = newCat;
+      });
+      const count = state.ui.selectedIds.size;
+      state.ui.selectedIds.clear();
+      renderResults();
+      showToast(`已將 ${count} 項改為${newCat ? `「${getCategoryLabel(newCat)}」` : '未分類'}`);
+    });
   });
 }
 
