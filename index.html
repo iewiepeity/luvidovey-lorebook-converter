@@ -788,11 +788,60 @@
     letter-spacing: 4px;
   }
 
+  /* 輸入區底部：字數統計 + 上傳按鈕 */
+  .input-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding: 0 4px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .char-count {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-family: var(--serif);
+    font-size: 11px;
+    color: var(--paper-soft);
+    letter-spacing: 2px;
+  }
+
+  .char-count-label {
+    opacity: 0.7;
+  }
+
+  .char-count-num {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--gold);
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+
+  .char-count-hint {
+    font-family: var(--italic);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 1px;
+    opacity: 0.8;
+  }
+
+  .char-count-hint.warn {
+    color: var(--vermilion);
+  }
+
+  .char-count-hint.ok {
+    color: var(--moss);
+  }
+
   /* 檔案上傳 */
   .file-upload {
-    display: block;
-    margin-top: 16px;
-    text-align: center;
+    display: inline-block;
+    text-align: right;
   }
 
   .file-upload input { display: none; }
@@ -2543,9 +2592,16 @@
 ## 地理構成
 大陸由七個王國組成，各有獨特的氣候與物產⋯⋯"></textarea>
 
-    <div class="file-upload">
-      <input type="file" id="fileInput" accept=".txt,.md,.markdown">
-      <label for="fileInput">— 上傳 .md / .txt 檔案 —</label>
+    <div class="input-footer">
+      <div class="char-count">
+        <span class="char-count-label">字數</span>
+        <span id="charCount" class="char-count-num">0</span>
+        <span class="char-count-hint" id="charCountHint"></span>
+      </div>
+      <div class="file-upload">
+        <input type="file" id="fileInput" accept=".txt,.md,.markdown">
+        <label for="fileInput">— 上傳 .md / .txt 檔案 —</label>
+      </div>
     </div>
 
     <!-- 模式切換 -->
@@ -2771,10 +2827,44 @@ fileInput.addEventListener('change', (e) => {
   const reader = new FileReader();
   reader.onload = (ev) => {
     inputText.value = ev.target.result;
+    updateCharCount();
     showToast('檔案已載入');
   };
   reader.readAsText(file, 'UTF-8');
 });
+
+// ============ 字數統計 ============
+const charCountEl = document.getElementById('charCount');
+const charCountHint = document.getElementById('charCountHint');
+
+function updateCharCount() {
+  const len = inputText.value.length;
+  charCountEl.textContent = len.toLocaleString();
+
+  // 字數提醒
+  if (len === 0) {
+    charCountHint.textContent = '';
+    charCountHint.className = 'char-count-hint';
+  } else if (len < 500) {
+    charCountHint.textContent = '內容偏少，可再補充';
+    charCountHint.className = 'char-count-hint';
+  } else if (len < 5000) {
+    charCountHint.textContent = '適合 AI 處理';
+    charCountHint.className = 'char-count-hint ok';
+  } else if (len < 20000) {
+    charCountHint.textContent = '長篇內容 · 處理會較慢';
+    charCountHint.className = 'char-count-hint';
+  } else if (len < 100000) {
+    charCountHint.textContent = '超長內容 · 輸出可能被截斷';
+    charCountHint.className = 'char-count-hint warn';
+  } else {
+    charCountHint.textContent = '已達極限 · 建議分段處理';
+    charCountHint.className = 'char-count-hint warn';
+  }
+}
+
+inputText.addEventListener('input', updateCharCount);
+updateCharCount();
 
 // ============ 選項切換 ============
 const MODE_HINTS = {
@@ -3254,7 +3344,7 @@ ${text}`;
     // 檢查是否被 safety filter 擋住
     const finishReason = data.candidates?.[0]?.finishReason;
     if (finishReason === 'SAFETY' || finishReason === 'PROHIBITED_CONTENT') {
-      throw new Error('內容被 Gemini 安全過濾器擋下，請嘗試減少露骨描述或分段處理');
+      throw new Error('被 Gemini 安全過濾器擋下。可能原因：含未成年相關描述（無法繞過）、極端暴力 + 性結合內容、真實人物敏感資訊。建議：移除敏感段落後重試，或改用規則拆分。');
     }
 
     const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
