@@ -1225,6 +1225,43 @@
     border-color: var(--moss);
   }
 
+  .item-actions-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .btn-image {
+    padding: 9px 20px;
+    background: transparent;
+    color: var(--paper-soft);
+    border: 1px solid var(--ink-line);
+    font-family: var(--serif);
+    font-size: 12px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    font-weight: 400;
+    transition: all 0.25s;
+    border-radius: 2px;
+  }
+
+  .btn-image:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+    letter-spacing: 4px;
+  }
+
+  @media (max-width: 640px) {
+    .item-actions-right {
+      gap: 6px;
+    }
+    .btn-image {
+      padding: 7px 14px;
+      font-size: 11px;
+      letter-spacing: 2px;
+    }
+  }
+
   .btn-delete {
     padding: 6px 16px;
     background: transparent;
@@ -5646,7 +5683,10 @@ function renderSingleItem(idx) {
 
       <div class="item-actions">
         <button class="btn-delete" data-idx="${idx}">移除此項</button>
-        <button class="btn-copy" data-idx="${idx}">複製此項</button>
+        <div class="item-actions-right">
+          <button class="btn-image" data-idx="${idx}" title="匯出為圖片分享">存為圖片</button>
+          <button class="btn-copy" data-idx="${idx}">複製此項</button>
+        </div>
       </div>
     </div>
   `;
@@ -5729,6 +5769,14 @@ function attachResultListeners() {
         e.target.classList.remove('copied');
         e.target.innerHTML = '複製此項';
       }, 2000);
+    });
+  });
+
+  // 存為圖片
+  document.querySelectorAll('.btn-image').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = +e.target.dataset.idx;
+      exportItemAsImage(idx);
     });
   });
 
@@ -6035,6 +6083,295 @@ function attachToolbarOnlyListeners() {
       showToast(`已將 ${count} 項改為${newCat ? `「${getCategoryLabel(newCat)}」` : '未分類'}`);
     });
   });
+}
+
+// ============ 匯出單一條目為圖片 ============
+async function exportItemAsImage(idx) {
+  const item = state.items[idx];
+  if (!item) return;
+
+  showToast('正在產生圖片⋯⋯');
+
+  // 等一個 tick 讓 toast 顯示
+  await new Promise(r => setTimeout(r, 50));
+
+  // 讀取當前主題的 CSS 變數
+  const rootStyles = getComputedStyle(document.documentElement);
+  const activeTheme = document.documentElement.getAttribute('data-theme') || 'sakura';
+  const styles = getComputedStyle(document.querySelector(`[data-theme="${activeTheme}"]`) || document.documentElement);
+
+  // 讀取主題色（同時確保有 fallback）
+  const getColor = (name, fallback) => {
+    const v = styles.getPropertyValue(name).trim();
+    return v || fallback;
+  };
+
+  const colors = {
+    bg: getColor('--card-bg', '#fff9f9'),
+    bgSoft: getColor('--ink', '#fffaf9'),
+    ink: getColor('--ink-line', '#e8d5dc'),
+    paper: getColor('--paper', '#4a2a3a'),
+    paperSoft: getColor('--paper-soft', '#9a7080'),
+    gold: getColor('--gold', '#d88aa5'),
+    goldDim: getColor('--gold-dim', '#e8b4c2'),
+    goldDeep: getColor('--gold-deep', '#b86a85')
+  };
+
+  // 卡片尺寸
+  const width = 960;
+  const padding = 72;
+  const contentWidth = width - padding * 2;
+
+  // 先計算所有文字的實際渲染高度，再決定 canvas 高度
+  const measureCanvas = document.createElement('canvas');
+  const mctx = measureCanvas.getContext('2d');
+
+  // 字體設定
+  const fonts = {
+    num: 'italic 300 72px "Cormorant Garamond", "EB Garamond", serif',
+    title: '500 32px "Noto Serif TC", serif',
+    catBadge: '400 13px "Noto Serif TC", serif',
+    sectionLabel: 'italic 300 11px "Cormorant Garamond", serif',
+    keyword: '400 14px "Noto Serif TC", serif',
+    content: '400 16px "Noto Serif TC", serif',
+    footer: 'italic 300 12px "Cormorant Garamond", serif',
+    footerBrand: '500 14px "Noto Serif TC", serif'
+  };
+
+  // 斷行工具：依照最大寬度將文字切成多行（支援中英混排）
+  function wrapText(ctx, text, maxWidth) {
+    const lines = [];
+    const paragraphs = String(text || '').split('\n');
+    for (const para of paragraphs) {
+      if (!para) { lines.push(''); continue; }
+      let current = '';
+      for (let i = 0; i < para.length; i++) {
+        const ch = para[i];
+        const testLine = current + ch;
+        if (ctx.measureText(testLine).width > maxWidth && current) {
+          lines.push(current);
+          current = ch;
+        } else {
+          current = testLine;
+        }
+      }
+      if (current) lines.push(current);
+    }
+    return lines;
+  }
+
+  // 預先量測內容行數以算出總高度
+  mctx.font = fonts.content;
+  const contentLines = wrapText(mctx, item.content || '（無內容）', contentWidth);
+  mctx.font = fonts.title;
+  const titleLines = wrapText(mctx, item.title || '未命名', contentWidth - 180);
+  mctx.font = fonts.keyword;
+  // 關鍵字要算是否會多行（每個關鍵字有邊框 padding）
+  const keywordsText = (item.keywords || []).join(' · ');
+  const keywordLines = wrapText(mctx, keywordsText, contentWidth);
+
+  // 計算總高度
+  const lineHeight = 28;
+  const titleLineHeight = 48;
+  const contentHeight = contentLines.length * lineHeight;
+  const titleHeight = titleLines.length * titleLineHeight;
+  const keywordsHeight = keywordLines.length * lineHeight + 16;
+  const height = Math.max(
+    720,
+    padding + 90 + titleHeight + 60 + keywordsHeight + 60 + contentHeight + padding + 120
+  );
+
+  // 建立實際 canvas（2x 解析度讓圖片清晰）
+  const scale = 2;
+  const canvas = document.createElement('canvas');
+  canvas.width = width * scale;
+  canvas.height = height * scale;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(scale, scale);
+
+  // 背景
+  ctx.fillStyle = colors.bg;
+  ctx.fillRect(0, 0, width, height);
+
+  // 左上角裝飾：頂部細金線
+  ctx.strokeStyle = colors.goldDim;
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(padding, padding - 8);
+  ctx.lineTo(padding + 200, padding - 8);
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // 右上角：品牌（卿卿我我 · LoveyDovey）
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = colors.paper;
+  ctx.font = '500 12px "Noto Serif TC", serif';
+  ctx.fillText('卿卿我我', width - padding, padding - 20);
+  ctx.fillStyle = colors.gold;
+  ctx.font = 'italic 300 13px "Cormorant Garamond", serif';
+  ctx.fillText('LoveyDovey', width - padding, padding - 2);
+
+  // 序號
+  let y = padding + 20;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = colors.gold;
+  ctx.font = fonts.num;
+  const numStr = String(idx + 1).padStart(2, '0');
+  ctx.fillText(numStr, padding, y);
+
+  // 類別徽章（序號右邊，較高位置）
+  const isBuiltinCat = item.category && BUILTIN_CATEGORY_LABELS[item.category];
+  const isCustomCat = item.category && state.customCategories.find(c => c.key === item.category);
+  let catLabel = '';
+  if (item.category) {
+    catLabel = getCategoryLabel(item.category);
+    if (!isBuiltinCat && !isCustomCat) {
+      catLabel = item.category.replace(/_/g, ' ');
+    }
+  }
+  if (catLabel) {
+    ctx.font = fonts.catBadge;
+    const catMetrics = ctx.measureText(catLabel);
+    const catX = padding + 100;
+    const catY = y + 20;
+    const catPadX = 14;
+    const catPadY = 6;
+    const catWidth = catMetrics.width + catPadX * 2;
+    const catHeight = 26;
+
+    // 徽章背景
+    ctx.strokeStyle = colors.goldDim;
+    ctx.fillStyle = colors.bgSoft;
+    ctx.lineWidth = 1;
+    ctx.fillRect(catX, catY, catWidth, catHeight);
+    ctx.strokeRect(catX, catY, catWidth, catHeight);
+
+    // 徽章文字
+    ctx.fillStyle = colors.gold;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(catLabel, catX + catPadX, catY + catHeight / 2 + 1);
+    ctx.textBaseline = 'top';
+  }
+
+  y += 90;
+
+  // 標題
+  ctx.fillStyle = colors.paper;
+  ctx.font = fonts.title;
+  titleLines.forEach(line => {
+    ctx.fillText(line, padding, y);
+    y += titleLineHeight;
+  });
+
+  y += 20;
+
+  // 分隔線（金色短線）
+  ctx.fillStyle = colors.gold;
+  ctx.fillRect(padding, y, 32, 2);
+  ctx.fillStyle = colors.ink;
+  ctx.fillRect(padding + 32, y + 0.5, contentWidth - 32, 1);
+  y += 30;
+
+  // 關鍵字區標題
+  ctx.fillStyle = colors.gold;
+  ctx.font = fonts.sectionLabel;
+  ctx.fillText('KEYWORDS  觸發關鍵字', padding, y);
+  y += 24;
+
+  // 關鍵字列表（用 · 串接）
+  ctx.fillStyle = colors.paperSoft;
+  ctx.font = fonts.keyword;
+  if ((item.keywords || []).length === 0) {
+    ctx.fillStyle = colors.paperSoft;
+    ctx.font = 'italic 300 13px "Cormorant Garamond", serif';
+    ctx.globalAlpha = 0.6;
+    ctx.fillText('（尚未設定關鍵字）', padding, y);
+    ctx.globalAlpha = 1;
+    y += 28;
+  } else {
+    keywordLines.forEach(line => {
+      ctx.fillText(line, padding, y);
+      y += lineHeight;
+    });
+  }
+
+  y += 24;
+
+  // 分隔線
+  ctx.fillStyle = colors.gold;
+  ctx.fillRect(padding, y, 32, 2);
+  ctx.fillStyle = colors.ink;
+  ctx.fillRect(padding + 32, y + 0.5, contentWidth - 32, 1);
+  y += 30;
+
+  // 內容區標題
+  ctx.fillStyle = colors.gold;
+  ctx.font = fonts.sectionLabel;
+  ctx.fillText('CONTENT  內容', padding, y);
+  y += 24;
+
+  // 內容文字
+  ctx.fillStyle = colors.paper;
+  ctx.font = fonts.content;
+  contentLines.forEach(line => {
+    ctx.fillText(line, padding, y);
+    y += lineHeight;
+  });
+
+  // 底部：浮水印
+  const footerY = height - padding + 20;
+
+  // 底部細線
+  ctx.strokeStyle = colors.goldDim;
+  ctx.globalAlpha = 0.4;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padding, footerY - 20);
+  ctx.lineTo(width - padding, footerY - 20);
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // 左下：made with
+  ctx.textAlign = 'left';
+  ctx.fillStyle = colors.paperSoft;
+  ctx.font = fonts.footer;
+  ctx.globalAlpha = 0.75;
+  ctx.fillText('made with', padding, footerY);
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = colors.gold;
+  ctx.font = fonts.footerBrand;
+  ctx.fillText('設定集轉換小工具', padding + 78, footerY - 1);
+
+  // 右下：時間戳
+  ctx.textAlign = 'right';
+  ctx.fillStyle = colors.paperSoft;
+  ctx.font = fonts.footer;
+  ctx.globalAlpha = 0.6;
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+  ctx.fillText(dateStr, width - padding, footerY);
+  ctx.globalAlpha = 1;
+
+  // 轉成 Blob 並觸發下載
+  canvas.toBlob((blob) => {
+    if (!blob) {
+      showToast('圖片產生失敗');
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const safeTitle = (item.title || 'lorebook-item').replace(/[\\/:*?"<>|]/g, '_').slice(0, 30);
+    a.href = url;
+    a.download = `${numStr}_${safeTitle}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`已下載：${a.download}`);
+  }, 'image/png');
 }
 
 // ============ 匯出 Lorebook ============
