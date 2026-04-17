@@ -1761,17 +1761,16 @@
     max-width: 900px;
     margin: 0 auto;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    gap: 40px;
-    flex-wrap: wrap;
+    gap: 32px;
   }
 
   .footer-logo-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
 
   .footer-logo {
@@ -1779,7 +1778,6 @@
     height: auto;
     opacity: 0.85;
     transition: opacity 0.3s;
-    /* 讓 logo 在深色主題下自動反色 */
     filter: none;
   }
 
@@ -1804,20 +1802,20 @@
 
   .footer-links {
     display: flex;
-    gap: 32px;
+    gap: 24px;
     align-items: center;
+    justify-content: center;
   }
 
   .footer-link {
     display: inline-flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
     text-decoration: none;
     color: var(--paper);
-    padding: 8px 0;
+    padding: 6px 16px;
     border-bottom: 1px solid var(--ink-line);
     transition: all 0.25s;
-    min-width: 180px;
   }
 
   .footer-link:hover {
@@ -1828,7 +1826,7 @@
   .footer-link-label {
     font-family: var(--display);
     font-style: italic;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 400;
     letter-spacing: 2px;
     line-height: 1.2;
@@ -1841,17 +1839,6 @@
     letter-spacing: 3px;
     margin-top: 4px;
     opacity: 0.8;
-  }
-
-  @media (max-width: 640px) {
-    .footer-content {
-      flex-direction: column;
-      gap: 32px;
-    }
-    .footer-link {
-      align-items: center;
-      min-width: 0;
-    }
   }
 
   /* ============================================
