@@ -1735,6 +1735,211 @@
     --cat-border: var(--gold-dim);
   }
 
+  /* ============ 自訂對話框 ============ */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    padding: 20px;
+  }
+
+  .modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal-box {
+    background: var(--card-bg);
+    border: 1px solid var(--ink-line);
+    border-radius: 3px;
+    padding: 36px 32px 28px;
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-overlay.show .modal-box {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 24px;
+    right: 24px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.6;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+
+  .modal-num {
+    font-family: var(--display);
+    font-style: italic;
+    color: var(--gold);
+    font-size: 36px;
+    font-weight: 300;
+    line-height: 0.9;
+  }
+
+  .modal-title {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 6px;
+    padding-left: 14px;
+    border-left: 1px solid var(--ink-line);
+    color: var(--paper);
+  }
+
+  .modal-hairline {
+    height: 1px;
+    background: var(--ink-line);
+    margin: 0 0 24px;
+    position: relative;
+  }
+
+  .modal-hairline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 2px;
+    background: var(--gold);
+    margin-top: -0.5px;
+  }
+
+  .modal-desc {
+    font-family: var(--serif);
+    font-size: 12px;
+    color: var(--paper-soft);
+    letter-spacing: 2px;
+    line-height: 1.8;
+    margin-bottom: 18px;
+  }
+
+  .modal-desc-en {
+    display: block;
+    font-family: var(--italic);
+    font-style: italic;
+    color: var(--gold);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+    opacity: 0.9;
+  }
+
+  .modal-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--ink);
+    border: 1px solid var(--ink-line);
+    color: var(--paper);
+    font-family: var(--serif);
+    font-size: 14px;
+    letter-spacing: 2px;
+    border-radius: 2px;
+    transition: border-color 0.25s;
+  }
+
+  .modal-input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .modal-input::placeholder {
+    color: var(--paper-soft);
+    opacity: 0.5;
+    font-family: var(--italic);
+    font-style: italic;
+    letter-spacing: 1px;
+  }
+
+  .modal-hint {
+    margin-top: 10px;
+    font-family: var(--italic);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--paper-soft);
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--ink-line);
+  }
+
+  .modal-btn {
+    padding: 9px 24px;
+    font-family: var(--serif);
+    font-size: 12px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.25s;
+  }
+
+  .modal-btn-cancel {
+    background: transparent;
+    color: var(--paper-soft);
+    border: 1px solid var(--ink-line);
+  }
+
+  .modal-btn-cancel:hover {
+    border-color: var(--paper-soft);
+    color: var(--paper);
+  }
+
+  .modal-btn-confirm {
+    background: var(--gold);
+    color: var(--card-bg);
+    border: 1px solid var(--gold);
+  }
+
+  .modal-btn-confirm:hover {
+    background: var(--gold-deep);
+    border-color: var(--gold-deep);
+    letter-spacing: 5px;
+  }
+
+  @media (max-width: 480px) {
+    .modal-box {
+      padding: 28px 22px 22px;
+    }
+    .modal-title {
+      font-size: 14px;
+      letter-spacing: 4px;
+    }
+    .modal-btn {
+      padding: 9px 18px;
+      letter-spacing: 3px;
+    }
+  }
+
   /* Toast */
   .toast {
     position: fixed;
@@ -2465,6 +2670,27 @@
   </div>
 </div>
 
+<!-- 新增類別對話框 -->
+<div class="modal-overlay" id="addCatModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-num">+</span>
+      <span class="modal-title">新增類別</span>
+    </div>
+    <div class="modal-hairline"></div>
+    <p class="modal-desc">
+      <span class="modal-desc-en">Create a custom category</span>
+      輸入新的整理類別名稱，AI 會將相關概念歸入此類別
+    </p>
+    <input type="text" id="catModalInput" class="modal-input" placeholder="例如：派系關係、時代背景、科技設定⋯⋯" maxlength="10">
+    <div class="modal-hint">最多 10 個字 · 按 Enter 確認 · 按 Esc 取消</div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" id="catModalCancel">取消</button>
+      <button class="modal-btn modal-btn-confirm" id="catModalConfirm">新增</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">已複製到剪貼簿</div>
 
 <script>
@@ -2631,9 +2857,30 @@ function renderCustomCategories() {
 }
 
 // 新增類別按鈕
-document.getElementById('addCatBtn').addEventListener('click', () => {
-  const label = prompt('請輸入新類別名稱（例如：派系關係、時代背景、科技設定）：');
-  if (!label || !label.trim()) return;
+// 新增類別按鈕 - 使用自訂 modal
+const addCatModal = document.getElementById('addCatModal');
+const catModalInput = document.getElementById('catModalInput');
+const catModalConfirm = document.getElementById('catModalConfirm');
+const catModalCancel = document.getElementById('catModalCancel');
+
+function openAddCatModal() {
+  catModalInput.value = '';
+  addCatModal.classList.add('show');
+  // 等動畫啟動後聚焦
+  setTimeout(() => catModalInput.focus(), 100);
+}
+
+function closeAddCatModal() {
+  addCatModal.classList.remove('show');
+}
+
+function submitNewCategory() {
+  const label = catModalInput.value;
+  if (!label || !label.trim()) {
+    showToast('請輸入類別名稱');
+    catModalInput.focus();
+    return;
+  }
   const cleanLabel = label.trim().slice(0, 10);
 
   // 檢查重複（內建 + 自訂）
@@ -2651,7 +2898,28 @@ document.getElementById('addCatBtn').addEventListener('click', () => {
   state.customCategories.push({ key, label: cleanLabel });
   localStorage.setItem('custom_categories', JSON.stringify(state.customCategories));
   renderCustomCategories();
+  closeAddCatModal();
   showToast(`已新增「${cleanLabel}」類別`);
+}
+
+document.getElementById('addCatBtn').addEventListener('click', openAddCatModal);
+catModalConfirm.addEventListener('click', submitNewCategory);
+catModalCancel.addEventListener('click', closeAddCatModal);
+
+// Enter 確認、Esc 取消
+catModalInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    submitNewCategory();
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    closeAddCatModal();
+  }
+});
+
+// 點擊遮罩外關閉
+addCatModal.addEventListener('click', (e) => {
+  if (e.target === addCatModal) closeAddCatModal();
 });
 
 // AI 擴充 toggle
