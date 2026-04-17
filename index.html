@@ -979,13 +979,6 @@
         <button class="chip cat-chip active nsfw-chip" data-cat="intimacy">🍓 觸感偏好</button>
         <button class="chip cat-chip active nsfw-chip" data-cat="nsfw">🔞 情色場景</button>
       </div>
-
-      <div class="option-group">
-        <span class="option-label">條目數量</span>
-        <button class="chip count-chip" data-count="concise">精簡 10-20</button>
-        <button class="chip count-chip" data-count="medium">適中 20-40</button>
-        <button class="chip count-chip active" data-count="detailed">詳盡 40-50</button>
-      </div>
     </div>
 
     <!-- 規則模式選項 -->
@@ -1050,8 +1043,7 @@ let state = {
   items: [],
   apiKey: localStorage.getItem('gemini_api_key') || '',
   categories: ['character', 'location', 'organization', 'item', 'term', 'event', 'culture', 'ability',
-               'relationship', 'romance', 'appearance', 'intimacy', 'nsfw'],
-  countLevel: 'detailed'  // concise / medium / detailed
+               'relationship', 'romance', 'appearance', 'intimacy', 'nsfw']
 };
 
 // 類別中文對照
@@ -1132,15 +1124,6 @@ document.querySelectorAll('.cat-chip').forEach(chip => {
     chip.classList.toggle('active');
     const activeCats = [...document.querySelectorAll('.cat-chip.active')].map(c => c.dataset.cat);
     state.categories = activeCats;
-  });
-});
-
-// 數量切換
-document.querySelectorAll('.count-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.count-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    state.countLevel = chip.dataset.count;
   });
 });
 
@@ -1277,12 +1260,6 @@ async function runAIExtraction(text) {
   }, 2500);
 
   try {
-    const countMap = {
-      concise: '10 到 20 條',
-      medium: '20 到 40 條',
-      detailed: '40 到 50 條'
-    };
-
     const catList = state.categories.map(c => `${c}（${CATEGORY_LABELS[c].replace(/[💕💗🌹🍓🔞]\s*/g, '')}）`).join('、');
 
     // 偵測是否啟用 NSFW 類別
@@ -1311,7 +1288,7 @@ async function runAIExtraction(text) {
 ${catList}
 ${nsfwInstruction}
 # 條目數量
-產出約 ${countMap[state.countLevel]} 條目。
+**根據原文的豐富程度自行判斷適當的條目數量**。原文資訊少就少，資訊豐富就多，不要硬湊也不要漏掉重要概念。上限不超過 50 條。
 
 # 每條目必須包含
 1. title（標題）：概念名稱，最多 50 字
@@ -1357,7 +1334,11 @@ ${text}`;
           generationConfig: {
             temperature: 0.3,
             maxOutputTokens: 32768,
-            responseMimeType: 'application/json'
+            responseMimeType: 'application/json',
+            // 關閉 thinking 模式大幅縮短回應時間（Gemini 2.5 Flash 預設會先思考再回答）
+            thinkingConfig: {
+              thinkingBudget: 0
+            }
           }
         })
       }
