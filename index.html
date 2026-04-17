@@ -11,25 +11,25 @@
   :root,
   [data-theme="sakura"] {
     /* 🌸 櫻花粉嫩 */
-    --ink: #fff5f7;
-    --ink-soft: #ffeaf0;
-    --ink-line: #f5c9d6;
-    --paper: #5a4050;
-    --paper-soft: #8a6b7a;
-    --gold: #e91e63;
-    --gold-dim: #d88aa5;
-    --gold-deep: #d91558;
-    --vermilion: #ef5da8;
-    --moss: #89c4d4;
-    --accent-blue: #b8dceb;
-    --accent-blue-soft: #e6f3f9;
+    --ink: #fff8fa;
+    --ink-soft: #ffeff4;
+    --ink-line: #f0d4de;
+    --paper: #6b4a5a;
+    --paper-soft: #a08598;
+    --gold: #d88aa5;              /* 主強調：柔粉（原本太深的 #e91e63 改掉） */
+    --gold-dim: #e8c4d0;           /* 次強調：更淺的粉 */
+    --gold-deep: #c07a94;          /* hover 加深：比主色深一階 */
+    --vermilion: #e8a0bc;          /* 警示：柔紅粉 */
+    --moss: #a8c8d4;               /* 成功：柔粉藍 */
+    --accent-blue: #c8deeb;
+    --accent-blue-soft: #eef5fa;
     --card-bg: #fff;
-    --bg-gradient-1: rgba(233, 30, 99, 0.08);
-    --bg-gradient-2: rgba(184, 220, 235, 0.35);
-    --bg-gradient-3: rgba(239, 93, 168, 0.08);
-    --bg-gradient-4: rgba(184, 220, 235, 0.25);
-    --shadow-color: rgba(233, 30, 99, 0.06);
-    --shadow-color-strong: rgba(233, 30, 99, 0.2);
+    --bg-gradient-1: rgba(216, 138, 165, 0.06);
+    --bg-gradient-2: rgba(200, 222, 235, 0.3);
+    --bg-gradient-3: rgba(232, 160, 188, 0.06);
+    --bg-gradient-4: rgba(200, 222, 235, 0.2);
+    --shadow-color: rgba(216, 138, 165, 0.08);
+    --shadow-color-strong: rgba(216, 138, 165, 0.2);
     --serif: 'Noto Serif TC', 'Fraunces', 'EB Garamond', serif;
     --sans: 'Noto Sans TC', -apple-system, sans-serif;
     --display: 'Fraunces', 'EB Garamond', 'Noto Serif TC', serif;
@@ -1662,7 +1662,7 @@
     </button>
     <div class="theme-menu" id="themeMenu">
       <button class="theme-option" data-theme="sakura">
-        <span class="theme-swatch" style="background:linear-gradient(135deg,#ffeaf0,#e91e63)"></span>
+        <span class="theme-swatch" style="background:linear-gradient(135deg,#ffeff4,#d88aa5)"></span>
         <span class="theme-name">櫻花粉嫩</span>
       </button>
       <button class="theme-option" data-theme="nightsakura">
@@ -1959,7 +1959,7 @@ document.querySelectorAll('.mode-tab').forEach(tab => {
 
 // ============ 主題切換 ============
 const THEMES = {
-  sakura:      { name: '櫻花粉嫩', swatch: 'linear-gradient(135deg,#ffeaf0,#e91e63)' },
+  sakura:      { name: '櫻花粉嫩', swatch: 'linear-gradient(135deg,#ffeff4,#d88aa5)' },
   nightsakura: { name: '夜櫻紫',   swatch: 'linear-gradient(135deg,#3d2a4d,#c77dff)' },
   skyblue:     { name: '粉藍療癒', swatch: 'linear-gradient(135deg,#e6f3f9,#4a90c2)' },
   ink:         { name: '暗夜墨染', swatch: 'linear-gradient(135deg,#1a1614,#c9a96e)' },
