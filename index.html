@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>設定集拆分器 · 卿卿我我世界觀轉換工具</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ink: #fff5f7;          /* 主背景：奶油粉 */
+    --ink-soft: #ffeaf0;     /* 卡片背景：淡櫻粉 */
+    --ink-line: #f5c9d6;     /* 邊線：柔粉 */
+    --paper: #5a4050;        /* 主文字：深莓紫褐 */
+    --paper-soft: #8a6b7a;   /* 次要文字：灰粉 */
+    --gold: #e91e63;          /* 主強調：櫻桃粉 */
+    --gold-dim: #d88aa5;     /* 次強調：霧玫瑰 */
+    --vermilion: #ef5da8;    /* 警示：亮粉 */
+    --moss: #89c4d4;         /* 成功：粉藍 */
+    --accent-blue: #b8dceb;  /* 粉藍：點綴色 */
+    --accent-blue-soft: #e6f3f9; /* 淡粉藍 */
+    --serif: 'Noto Serif TC', 'Cormorant Garamond', serif;
+    --sans: 'Noto Sans TC', sans-serif;
+    --display: 'Cormorant Garamond', 'Noto Serif TC', serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--ink);
+    color: var(--paper);
+    min-height: 100vh;
+    line-height: 1.7;
+    background-image:
+      radial-gradient(ellipse at top left, rgba(233, 30, 99, 0.08), transparent 55%),
+      radial-gradient(ellipse at top right, rgba(184, 220, 235, 0.35), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(239, 93, 168, 0.08), transparent 55%),
+      radial-gradient(ellipse at bottom left, rgba(184, 220, 235, 0.25), transparent 55%);
+  }
+
+  /* 頂部標題區 */
+  .hero {
+    padding: 70px 40px 50px;
+    text-align: center;
+    border-bottom: 1px solid var(--ink-line);
+    position: relative;
+    background: linear-gradient(180deg, rgba(255,234,240,0.5) 0%, transparent 100%);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 30px; left: 50%;
+    transform: translateX(-50%);
+    width: 60px; height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-sub {
+    font-family: var(--display);
+    font-style: italic;
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .hero-title {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(32px, 5vw, 48px);
+    letter-spacing: 8px;
+    margin-bottom: 16px;
+    color: var(--paper);
+  }
+
+  .hero-desc {
+    font-size: 13px;
+    color: var(--paper-soft);
+    opacity: 0.65;
+    letter-spacing: 1.5px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .hero-ornament {
+    margin-top: 24px;
+    color: var(--gold-dim);
+    font-size: 16px;
+    letter-spacing: 12px;
+  }
+
+  /* 主容器 */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 50px 30px 80px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  @media (min-width: 1024px) {
+    .container { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* 卡片樣式 */
+  .panel {
+    background: var(--ink-soft);
+    border: 1px solid var(--ink-line);
+    border-radius: 16px;
+    padding: 32px;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(233, 30, 99, 0.06);
+  }
+
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 12px; left: 12px;
+    width: 20px; height: 20px;
+    border-top: 2px solid var(--gold);
+    border-left: 2px solid var(--gold);
+    border-radius: 4px 0 0 0;
+    opacity: 0.4;
+  }
+
+  .panel::after {
+    content: '';
+    position: absolute;
+    bottom: 12px; right: 12px;
+    width: 20px; height: 20px;
+    border-bottom: 2px solid var(--accent-blue);
+    border-right: 2px solid var(--accent-blue);
+    border-radius: 0 0 4px 0;
+    opacity: 0.7;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ink-line);
+  }
+
+  .panel-num {
+    font-family: var(--display);
+    font-style: italic;
+    color: var(--gold);
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1;
+  }
+
+  .panel-title {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 3px;
+  }
+
+  .panel-hint {
+    font-size: 11px;
+    color: var(--paper-soft);
+    opacity: 0.5;
+    margin-left: auto;
+    letter-spacing: 1px;
+  }
+
+  /* 輸入區 */
+  textarea.input-area {
+    width: 100%;
+    min-height: 320px;
+    background: #fff;
+    border: 1px solid var(--ink-line);
+    color: var(--paper);
+    padding: 20px;
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.8;
+    border-radius: 8px;
+    resize: vertical;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-shadow: inset 0 1px 2px rgba(233, 30, 99, 0.04);
+  }
+
+  textarea.input-area:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.12);
+  }
+
+  textarea.input-area::placeholder {
+    color: var(--paper-soft);
+    opacity: 0.5;
+    font-style: italic;
+  }
+
+  /* 選項區 */
+  .options {
+    margin-top: 20px;
+    display: grid;
+    gap: 16px;
+  }
+
+  .option-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .option-label {
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    min-width: 80px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    background: #fff;
+    border: 1px solid var(--ink-line);
+    color: var(--paper-soft);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+    border-radius: 20px;
+  }
+
+  .chip:hover {
+    border-color: var(--gold-dim);
+    color: var(--paper);
+    transform: translateY(-1px);
+  }
+
+  .chip.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(233, 30, 99, 0.2);
+  }
+
+  /* 第二組選項（標題層級）用粉藍區分 */
+  .chip[data-level].active {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: #2a5a6c;
+    box-shadow: 0 2px 8px rgba(184, 220, 235, 0.4);
+  }
+
+  /* 按鈕 */
+  .btn-primary {
+    margin-top: 24px;
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--gold) 0%, #f06292 100%);
+    color: #fff;
+    border: none;
+    font-family: var(--serif);
+    font-size: 15px;
+    letter-spacing: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(233, 30, 99, 0.25);
+    font-weight: 500;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(233, 30, 99, 0.35);
+  }
+
+  .btn-primary::before {
+    content: '❀';
+    margin-right: 12px;
+    font-size: 14px;
+  }
+
+  .btn-secondary {
+    padding: 8px 18px;
+    background: #fff;
+    color: var(--paper);
+    border: 1px solid var(--ink-line);
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 18px;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: #fff;
+    transform: translateY(-1px);
+  }
+
+  /* 檔案上傳 */
+  .file-upload {
+    display: inline-block;
+    margin-top: 12px;
+  }
+
+  .file-upload input { display: none; }
+
+  .file-upload label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: var(--accent-blue-soft);
+    color: #4a7a8c;
+    border: 1px dashed var(--accent-blue);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+    border-radius: 20px;
+  }
+
+  .file-upload label:hover {
+    background: var(--accent-blue);
+    border-style: solid;
+    color: #2a5a6c;
+  }
+
+  /* 輸出區 */
+  .output-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: #fff;
+    border-left: 3px solid var(--gold);
+    font-size: 12px;
+    letter-spacing: 1px;
+    border-radius: 8px;
+  }
+
+  .stats-num {
+    font-family: var(--display);
+    font-size: 24px;
+    color: var(--gold);
+    font-weight: 400;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--paper-soft);
+    opacity: 0.5;
+  }
+
+  .empty-state-icon {
+    font-size: 40px;
+    color: var(--gold-dim);
+    margin-bottom: 16px;
+    letter-spacing: 16px;
+  }
+
+  .empty-state-text {
+    font-family: var(--serif);
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+
+  /* 項目卡片 */
+  .item-card {
+    background: #fff;
+    border: 1px solid var(--ink-line);
+    margin-bottom: 20px;
+    padding: 24px;
+    border-radius: 14px;
+    position: relative;
+    transition: all 0.3s;
+    box-shadow: 0 2px 12px rgba(233, 30, 99, 0.04);
+  }
+
+  .item-card:hover {
+    border-color: var(--gold-dim);
+    box-shadow: 0 6px 20px rgba(233, 30, 99, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .item-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--ink-line);
+  }
+
+  .item-index {
+    font-family: var(--display);
+    font-style: italic;
+    color: var(--gold);
+    font-size: 20px;
+    min-width: 30px;
+  }
+
+  .item-title-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--paper);
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    padding: 4px 0;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.2s;
+  }
+
+  .item-title-input:focus {
+    outline: none;
+    border-bottom-color: var(--gold-dim);
+  }
+
+  .item-section {
+    margin-bottom: 16px;
+  }
+
+  .item-section-label {
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .count-badge {
+    font-family: var(--display);
+    font-style: italic;
+    color: var(--paper-soft);
+    font-weight: 400;
+    letter-spacing: 1px;
+  }
+
+  .count-badge.over {
+    color: var(--vermilion);
+  }
+
+  .count-badge.good {
+    color: var(--moss);
+  }
+
+  /* 關鍵字 */
+  .keywords-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    background: var(--ink-soft);
+    border: 1px solid var(--ink-line);
+    border-radius: 10px;
+    min-height: 50px;
+  }
+
+  .keyword-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: #fff;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-size: 12px;
+    letter-spacing: 1px;
+    border-radius: 14px;
+  }
+
+  .keyword-tag .remove {
+    cursor: pointer;
+    opacity: 0.5;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .keyword-tag .remove:hover {
+    opacity: 1;
+    color: var(--vermilion);
+  }
+
+  .keyword-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .keyword-input {
+    background: #fff;
+    border: 1px dashed var(--ink-line);
+    color: var(--paper);
+    padding: 4px 12px;
+    font-size: 12px;
+    border-radius: 14px;
+    width: 100px;
+    transition: border-color 0.2s;
+  }
+
+  .keyword-input:focus {
+    outline: none;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+
+  .suggested-keywords {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--ink-line);
+  }
+
+  .suggested-label {
+    font-size: 10px;
+    color: var(--paper-soft);
+    opacity: 0.7;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .suggested-chip {
+    display: inline-block;
+    padding: 3px 10px;
+    margin: 3px;
+    background: var(--accent-blue-soft);
+    border: 1px dotted var(--accent-blue);
+    color: #4a7a8c;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+
+  .suggested-chip:hover {
+    background: var(--gold);
+    color: #fff;
+    border-style: solid;
+    border-color: var(--gold);
+    transform: translateY(-1px);
+  }
+
+  .suggested-chip.used {
+    opacity: 0.3;
+    pointer-events: none;
+    text-decoration: line-through;
+  }
+
+  .item-textarea {
+    width: 100%;
+    min-height: 120px;
+    background: var(--ink-soft);
+    border: 1px solid var(--ink-line);
+    color: var(--paper);
+    padding: 12px;
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.8;
+    border-radius: 10px;
+    resize: vertical;
+    transition: all 0.2s;
+  }
+
+  .item-textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.08);
+  }
+
+  .item-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ink-line);
+  }
+
+  .btn-copy {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, var(--gold) 0%, #f06292 100%);
+    color: #fff;
+    border: none;
+    font-family: var(--serif);
+    font-size: 13px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(233, 30, 99, 0.2);
+  }
+
+  .btn-copy:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(233, 30, 99, 0.3);
+  }
+
+  .btn-copy.copied {
+    background: linear-gradient(135deg, var(--moss) 0%, #7ab5c4 100%);
+    box-shadow: 0 3px 10px rgba(137, 196, 212, 0.4);
+  }
+
+  .btn-delete {
+    padding: 6px 14px;
+    background: transparent;
+    color: var(--paper-soft);
+    border: 1px solid var(--ink-line);
+    font-size: 11px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.2s;
+    border-radius: 14px;
+  }
+
+  .btn-delete:hover {
+    color: var(--vermilion);
+    border-color: var(--vermilion);
+    opacity: 1;
+    background: rgba(239, 93, 168, 0.05);
+  }
+
+  /* 全域操作 */
+  .global-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px dashed var(--ink-line);
+  }
+
+  /* 模式切換 */
+  .mode-switcher {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 4px;
+    background: var(--ink-soft);
+    border-radius: 12px;
+  }
+
+  .mode-tab {
+    flex: 1;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    color: var(--paper-soft);
+    font-family: var(--sans);
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+  }
+
+  .mode-tab:hover {
+    color: var(--gold);
+  }
+
+  .mode-tab.active {
+    background: #fff;
+    color: var(--gold);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(233, 30, 99, 0.1);
+  }
+
+  /* API Key 設定框 */
+  .api-key-box {
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(255,234,240,0.6), rgba(230,243,249,0.6));
+    border: 1px solid var(--ink-line);
+    border-radius: 12px;
+  }
+
+  .api-key-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .api-key-label {
+    font-size: 13px;
+    color: var(--paper);
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+
+  .api-key-status {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 10px;
+    background: var(--ink-line);
+    color: var(--paper-soft);
+  }
+
+  .api-key-status.ready {
+    background: var(--moss);
+    color: #fff;
+  }
+
+  .api-key-input-wrap {
+    display: flex;
+    gap: 8px;
+  }
+
+  #apiKeyInput {
+    flex: 1;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid var(--ink-line);
+    color: var(--paper);
+    font-size: 12px;
+    border-radius: 20px;
+    font-family: monospace;
+    transition: border-color 0.2s;
+  }
+
+  #apiKeyInput:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .btn-save-key {
+    padding: 10px 20px;
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .btn-save-key:hover {
+    background: #d91558;
+    transform: translateY(-1px);
+  }
+
+  .api-key-hint {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--gold-dim);
+    text-decoration: none;
+    letter-spacing: 1px;
+  }
+
+  .api-key-hint:hover {
+    color: var(--gold);
+  }
+
+  .privacy-note {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(137, 196, 212, 0.12);
+    border-left: 3px solid var(--moss);
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--paper);
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+  }
+
+  /* AI 處理進度 */
+  .ai-progress {
+    margin-top: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(255,234,240,0.5), rgba(230,243,249,0.5));
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .ai-progress-spinner {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto 12px;
+    border: 3px solid var(--ink-line);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .ai-progress-text {
+    color: var(--paper);
+    font-size: 13px;
+    letter-spacing: 1px;
+    font-family: var(--serif);
+  }
+
+  /* 類別標籤 */
+  .item-category-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    border-radius: 10px;
+    margin-left: 8px;
+    font-weight: 500;
+  }
+
+  .cat-character { background: #ffe0e8; color: #c2185b; }
+  .cat-location  { background: #e1f5fe; color: #0277bd; }
+  .cat-organization { background: #fff3e0; color: #e65100; }
+  .cat-item      { background: #f3e5f5; color: #7b1fa2; }
+  .cat-term      { background: #e8f5e9; color: #2e7d32; }
+  .cat-event     { background: #fff8e1; color: #f57c00; }
+  .cat-culture   { background: #fce4ec; color: #ad1457; }
+  .cat-ability   { background: #ede7f6; color: #5e35b8; }
+  .cat-relationship { background: #fce4f0; color: #c2185b; }
+  .cat-romance   { background: #fde4ed; color: #d81b60; }
+  .cat-appearance { background: #ffe9f0; color: #e91e63; }
+  .cat-intimacy  { background: #fdd8e4; color: #ad1457; }
+  .cat-nsfw      { background: linear-gradient(135deg, #ff8ab0, #e91e63); color: #fff; }
+
+  /* NSFW 類別 chip 的特殊樣式 */
+  .nsfw-chip {
+    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,234,240,0.9));
+    border-color: var(--gold-dim) !important;
+  }
+
+  .nsfw-chip.active {
+    background: linear-gradient(135deg, #ff8ab0, #e91e63) !important;
+    border-color: #e91e63 !important;
+    color: #fff !important;
+    box-shadow: 0 2px 8px rgba(233, 30, 99, 0.3) !important;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, var(--gold) 0%, #f06292 100%);
+    color: #fff;
+    padding: 14px 32px;
+    font-family: var(--serif);
+    font-size: 14px;
+    letter-spacing: 3px;
+    box-shadow: 0 10px 40px rgba(233, 30, 99, 0.25);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+    border-radius: 30px;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* 滾動條 */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--ink-soft); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 10px; border: 2px solid var(--ink-soft); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+  /* 說明區 */
+  .footer-note {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--paper-soft);
+    opacity: 0.5;
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-family: var(--display);
+    font-style: italic;
+  }
+
+  .footer-note::before,
+  .footer-note::after {
+    content: '❀';
+    margin: 0 14px;
+    color: var(--gold-dim);
+    font-style: normal;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-sub">Worldview Converter</div>
+  <h1 class="hero-title">設 定 集 拆 分 器</h1>
+  <p class="hero-desc">將你的世界觀長文，轉化為卿卿我我設定集格式的一項項智慧條目</p>
+  <div class="hero-ornament">❋ · ❋ · ❋</div>
+</div>
+
+<div class="container">
+
+  <!-- 左：輸入區 -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-num">01</span>
+      <span class="panel-title">投 入 原 文</span>
+      <span class="panel-hint">貼上或上傳你的世界觀文稿</span>
+    </div>
+
+    <textarea class="input-area" id="inputText" placeholder="在此貼上你的世界觀內容⋯⋯
+
+支援格式：
+# 標題一級
+## 標題二級
+### 標題三級
+──── 或以空行分段 ────
+
+例如：
+# 相變世紀 · 紀元設定
+相變世紀始於 P.E. 00，是人類意識與⋯⋯
+
+## 地理構成
+世界由七大星域構成⋯⋯"></textarea>
+
+    <div class="file-upload">
+      <input type="file" id="fileInput" accept=".txt,.md,.markdown">
+      <label for="fileInput">⬆ 上傳 .md / .txt 檔案</label>
+    </div>
+
+    <!-- 模式切換 -->
+    <div class="mode-switcher">
+      <button class="mode-tab active" data-mode="ai">✨ AI 智慧整理 lorebook</button>
+      <button class="mode-tab" data-mode="rule">📐 規則拆分</button>
+    </div>
+
+    <!-- AI 模式選項 -->
+    <div class="options" id="aiOptions">
+      <div class="api-key-box">
+        <div class="api-key-header">
+          <span class="api-key-label">🔑 Gemini API Key</span>
+          <span class="api-key-status" id="keyStatus">未設定</span>
+        </div>
+        <div class="api-key-input-wrap">
+          <input type="password" id="apiKeyInput" placeholder="貼上你的 Gemini API key（會存在瀏覽器本地）">
+          <button class="btn-save-key" id="saveKeyBtn">儲存</button>
+        </div>
+        <a href="https://aistudio.google.com/apikey" target="_blank" class="api-key-hint">
+          ✦ 還沒有 API key？點這裡免費申請 →
+        </a>
+        <div class="privacy-note">
+          🔒 你的 API key 只儲存在這台電腦的瀏覽器裡，不會上傳任何伺服器。所有運算都在你的瀏覽器本地進行。
+        </div>
+      </div>
+
+      <div class="option-group">
+        <span class="option-label">整理類別</span>
+        <button class="chip cat-chip active" data-cat="character">人物角色</button>
+        <button class="chip cat-chip active" data-cat="location">地點場域</button>
+        <button class="chip cat-chip active" data-cat="organization">組織勢力</button>
+        <button class="chip cat-chip active" data-cat="item">物品道具</button>
+        <button class="chip cat-chip active" data-cat="term">專有名詞</button>
+        <button class="chip cat-chip active" data-cat="event">事件時間線</button>
+        <button class="chip cat-chip active" data-cat="culture">文化風俗</button>
+        <button class="chip cat-chip active" data-cat="ability">能力體系</button>
+        <button class="chip cat-chip active nsfw-chip" data-cat="relationship">💕 關係設定</button>
+        <button class="chip cat-chip active nsfw-chip" data-cat="romance">💗 情愛傾向</button>
+        <button class="chip cat-chip active nsfw-chip" data-cat="appearance">🌹 身體特徵</button>
+        <button class="chip cat-chip active nsfw-chip" data-cat="intimacy">🍓 觸感偏好</button>
+        <button class="chip cat-chip active nsfw-chip" data-cat="nsfw">🔞 情色場景</button>
+      </div>
+
+      <div class="option-group">
+        <span class="option-label">條目數量</span>
+        <button class="chip count-chip" data-count="concise">精簡 10-20</button>
+        <button class="chip count-chip" data-count="medium">適中 20-40</button>
+        <button class="chip count-chip active" data-count="detailed">詳盡 40-50</button>
+      </div>
+    </div>
+
+    <!-- 規則模式選項 -->
+    <div class="options" id="ruleOptions" style="display:none;">
+      <div class="option-group">
+        <span class="option-label">拆分方式</span>
+        <button class="chip" data-split="heading">依 Markdown 標題</button>
+        <button class="chip" data-split="paragraph">依空行分段</button>
+        <button class="chip active" data-split="smart">智慧混合（推薦）</button>
+      </div>
+
+      <div class="option-group">
+        <span class="option-label">標題層級</span>
+        <button class="chip" data-level="1"># 一級</button>
+        <button class="chip active" data-level="2">## 二級</button>
+        <button class="chip" data-level="3">### 三級</button>
+        <button class="chip" data-level="all">全部</button>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="parseBtn">
+      <span id="parseBtnText">✨ 讓 AI 幫我整理</span>
+    </button>
+
+    <!-- AI 處理進度 -->
+    <div class="ai-progress" id="aiProgress" style="display:none;">
+      <div class="ai-progress-spinner"></div>
+      <div class="ai-progress-text" id="aiProgressText">AI 正在閱讀你的世界觀⋯⋯</div>
+    </div>
+  </div>
+
+  <!-- 右：輸出區 -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-num">02</span>
+      <span class="panel-title">拆 分 結 果</span>
+      <span class="panel-hint" id="itemCount">尚未拆分</span>
+    </div>
+
+    <div id="resultsContainer">
+      <div class="empty-state">
+        <div class="empty-state-icon">◇ ◇ ◇</div>
+        <div class="empty-state-text">等 待 原 文 投 入</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-note">
+  made with 🌸 by <a href="https://github.com/iewiepeity/luvidovey-lorebook-converter" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dotted var(--gold-dim);">iewiepeity</a> · for the LoveyDovey community
+</div>
+
+<div class="toast" id="toast">已複製到剪貼簿</div>
+
+<script>
+// ============ 狀態管理 ============
+let state = {
+  mode: 'ai',  // 'ai' or 'rule'
+  splitMode: 'smart',
+  headingLevel: '2',
+  items: [],
+  apiKey: localStorage.getItem('gemini_api_key') || '',
+  categories: ['character', 'location', 'organization', 'item', 'term', 'event', 'culture', 'ability',
+               'relationship', 'romance', 'appearance', 'intimacy', 'nsfw'],
+  countLevel: 'detailed'  // concise / medium / detailed
+};
+
+// 類別中文對照
+const CATEGORY_LABELS = {
+  character: '人物角色',
+  location: '地點場域',
+  organization: '組織勢力',
+  item: '物品道具',
+  term: '專有名詞',
+  event: '事件時間線',
+  culture: '文化風俗',
+  ability: '能力體系',
+  relationship: '💕 關係設定',
+  romance: '💗 情愛傾向',
+  appearance: '🌹 身體特徵',
+  intimacy: '🍓 觸感偏好',
+  nsfw: '🔞 情色場景'
+};
+
+// ============ 停用詞（繁中 + 常用虛詞） ============
+const STOPWORDS = new Set([
+  '的','了','是','在','和','與','或','但','而','也','都','就','才','又','還','已','要','會','能','可',
+  '有','沒','無','不','非','並','使','讓','被','把','將','對','於','以','之','為','所','其','這','那',
+  '此','該','其','哪','什','何','誰','怎','多','少','很','最','更','太','好','很好','可以','一個','一些',
+  '一下','一樣','一直','這個','那個','這些','那些','我們','他們','她們','它們','自己','如果','因為',
+  '所以','雖然','但是','不過','然後','而且','即使','就是','只是','還是','或者','以及','以便','因此',
+  '然而','不僅','而是','從而','於是','就像','比如','例如','如此','總之','其實','其中','同時','之後',
+  '之前','之間','之中','之下','之上','作為','透過','通過','成為','關於','關於','對於','由於','根據',
+  '開始','結束','進行','發生','出現','存在','表示','顯示','包含','包括','使用','採用','利用','需要',
+  '可能','必須','應該','必要','主要','重要','一般','特別','常常','經常','偶爾','時常','有時','從來',
+  '正在','已經','即將','將要','此時','當時','此處','那裡','這裡','該處','它','他','她','我','你','您',
+  'The','a','an','is','are','was','were','be','been','being','have','has','had','do','does','did',
+  'will','would','could','should','may','might','must','shall','can','need','ought','used','just',
+  'of','in','on','at','to','for','with','by','from','up','about','into','through','during','before',
+  'after','above','below','between','and','or','but','if','then','so','because','as','while','since'
+]);
+
+// ============ DOM 引用 ============
+const inputText = document.getElementById('inputText');
+const fileInput = document.getElementById('fileInput');
+const parseBtn = document.getElementById('parseBtn');
+const resultsContainer = document.getElementById('resultsContainer');
+const itemCount = document.getElementById('itemCount');
+const toast = document.getElementById('toast');
+
+// ============ 檔案上傳 ============
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    inputText.value = ev.target.result;
+    showToast('檔案已載入');
+  };
+  reader.readAsText(file, 'UTF-8');
+});
+
+// ============ 選項切換 ============
+document.querySelectorAll('.chip[data-split]').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip[data-split]').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    state.splitMode = chip.dataset.split;
+  });
+});
+
+document.querySelectorAll('.chip[data-level]').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip[data-level]').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    state.headingLevel = chip.dataset.level;
+  });
+});
+
+// 類別切換（多選）
+document.querySelectorAll('.cat-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.classList.toggle('active');
+    const activeCats = [...document.querySelectorAll('.cat-chip.active')].map(c => c.dataset.cat);
+    state.categories = activeCats;
+  });
+});
+
+// 數量切換
+document.querySelectorAll('.count-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.count-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    state.countLevel = chip.dataset.count;
+  });
+});
+
+// ============ 模式切換 ============
+document.querySelectorAll('.mode-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    state.mode = tab.dataset.mode;
+
+    const aiOpts = document.getElementById('aiOptions');
+    const ruleOpts = document.getElementById('ruleOptions');
+    const btnText = document.getElementById('parseBtnText');
+
+    if (state.mode === 'ai') {
+      aiOpts.style.display = '';
+      ruleOpts.style.display = 'none';
+      btnText.textContent = '✨ 讓 AI 幫我整理';
+    } else {
+      aiOpts.style.display = 'none';
+      ruleOpts.style.display = '';
+      btnText.textContent = '📐 開始規則拆分';
+    }
+  });
+});
+
+// ============ API Key 管理 ============
+const apiKeyInput = document.getElementById('apiKeyInput');
+const saveKeyBtn = document.getElementById('saveKeyBtn');
+const keyStatus = document.getElementById('keyStatus');
+
+function updateKeyStatus() {
+  if (state.apiKey) {
+    keyStatus.textContent = '已儲存 ✓';
+    keyStatus.classList.add('ready');
+    apiKeyInput.placeholder = '已儲存（如需更換請重新貼上）';
+  } else {
+    keyStatus.textContent = '未設定';
+    keyStatus.classList.remove('ready');
+  }
+}
+updateKeyStatus();
+
+saveKeyBtn.addEventListener('click', () => {
+  const key = apiKeyInput.value.trim();
+  if (!key) {
+    showToast('請先貼上 API key');
+    return;
+  }
+  state.apiKey = key;
+  localStorage.setItem('gemini_api_key', key);
+  apiKeyInput.value = '';
+  updateKeyStatus();
+  showToast('API key 已儲存 🌸');
+});
+
+apiKeyInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') saveKeyBtn.click();
+});
+
+// ============ 主要拆分邏輯 ============
+parseBtn.addEventListener('click', async () => {
+  const text = inputText.value.trim();
+  if (!text) {
+    showToast('請先貼上內容');
+    return;
+  }
+
+  if (state.mode === 'ai') {
+    await runAIExtraction(text);
+  } else {
+    runRuleSplit(text);
+  }
+});
+
+// ============ 規則拆分 ============
+function runRuleSplit(text) {
+  let items = [];
+  if (state.splitMode === 'heading') {
+    items = splitByHeading(text, state.headingLevel);
+  } else if (state.splitMode === 'paragraph') {
+    items = splitByParagraph(text);
+  } else {
+    items = splitSmart(text, state.headingLevel);
+  }
+
+  if (items.length === 0) {
+    showToast('內容似乎太短了，請多貼一些文字');
+    return;
+  }
+
+  items = items.map(item => ({
+    ...item,
+    category: null,
+    keywords: [],
+    suggested: extractKeywords(item.content, item.title)
+  }));
+
+  state.items = items;
+  renderResults();
+}
+
+// ============ AI 智慧整理 ============
+async function runAIExtraction(text) {
+  if (!state.apiKey) {
+    showToast('請先設定 Gemini API key');
+    apiKeyInput.focus();
+    return;
+  }
+
+  if (state.categories.length === 0) {
+    showToast('請至少選一個整理類別');
+    return;
+  }
+
+  const aiProgress = document.getElementById('aiProgress');
+  const aiProgressText = document.getElementById('aiProgressText');
+  parseBtn.disabled = true;
+  parseBtn.style.opacity = '0.5';
+  aiProgress.style.display = 'block';
+
+  const progressMessages = [
+    '📖 AI 正在閱讀你的世界觀⋯⋯',
+    '✨ 辨識專有名詞與重要概念⋯⋯',
+    '🔍 分類整理條目⋯⋯',
+    '🌸 提取觸發關鍵字⋯⋯',
+    '💫 最後潤飾中⋯⋯'
+  ];
+  let pi = 0;
+  aiProgressText.textContent = progressMessages[0];
+  const progressTimer = setInterval(() => {
+    pi = (pi + 1) % progressMessages.length;
+    aiProgressText.textContent = progressMessages[pi];
+  }, 2500);
+
+  try {
+    const countMap = {
+      concise: '10 到 20 條',
+      medium: '20 到 40 條',
+      detailed: '40 到 50 條'
+    };
+
+    const catList = state.categories.map(c => `${c}（${CATEGORY_LABELS[c].replace(/[💕💗🌹🍓🔞]\s*/g, '')}）`).join('、');
+
+    // 偵測是否啟用 NSFW 類別
+    const nsfwCategories = ['relationship', 'romance', 'appearance', 'intimacy', 'nsfw'];
+    const hasNsfw = state.categories.some(c => nsfwCategories.includes(c));
+
+    const nsfwInstruction = hasNsfw ? `
+
+# ⚠️ 關於成人/親密向類別的說明
+本世界觀可能用於 LoveyDovey（卿卿我我）這類**成人向 AI 陪伴 App**，以下類別屬於成人互動範圍，請以**專業、直白、不避諱**的態度整理：
+- **relationship（關係設定）**：角色間的關係結構，如：戀人、夫妻、主從、師徒、青梅竹馬、禁忌關係、年齡差、身份差、CP 傾向等
+- **romance（情愛傾向）**：角色在親密關係中的性格定位，如：病嬌、傲嬌、腹黑、撩人、佔有慾強、忠犬、S/M 傾向、攻受傾向等
+- **appearance（身體特徵）**：外貌與身體描述，包含但不限於：五官、髮色、身材比例、特殊印記、胸圍腰圍腿長、膚質、體香等**詳細且感官化的描述**
+- **intimacy（觸感偏好）**：觸碰與親密互動的偏好，如：敏感帶、性癖好、禁忌、喜歡的前戲方式、肢體語言偏好等
+- **nsfw（情色場景）**：完整的性愛場景設定、特殊性癖、R18 互動偏好、房事習慣等
+
+**重要：整理這些類別時，不要自我審查或婉轉帶過。** 使用者需要具體、可用於角色扮演的詳細設定，模糊的描述會讓 lorebook 失去價值。若原文有明確的露骨描述，完整保留；若原文只是暗示，可適度具體化但不可編造原文沒有的內容。
+` : '';
+
+    const prompt = `你是一位專業的世界觀資料整理師，正在為「卿卿我我」（LoveyDovey）成人向 AI 聊天 App 整理 lorebook（設定集）。
+
+# 任務
+閱讀以下世界觀文本，將其中的概念整理為獨立的 lorebook 條目。每條目代表一個「AI 讀到關鍵字時會拉出來參考」的知識單元。
+
+# 類別（只整理這些類別）
+${catList}
+${nsfwInstruction}
+# 條目數量
+產出約 ${countMap[state.countLevel]} 條目。
+
+# 每條目必須包含
+1. title（標題）：概念名稱，最多 50 字
+2. category：類別代碼（${state.categories.join(' / ')}）
+3. keywords：2 到 10 個觸發關鍵字，包含該概念的各種稱呼、別名、相關核心詞。必須是 AI 對話中實際可能出現的詞。
+4. content：該概念的詳細描述，用條列或段落皆可，最多 2000 字。描述要完整自洽——AI 只會讀到這一條，不會看到其他條目，所以重要上下文要寫進來。
+
+# 重要原則
+- **不要拆原文段落**——要「萃取概念」。例如原文一段講了三個角色，就整理成三條人物條目，而非一個段落條目。
+- 每條目要「獨立可讀」：假設讀者只看到這一條，也能理解這個概念。
+- 關鍵字要**覆蓋對話中可能的說法**：正式名稱、簡稱、別名、相關詞。例如「李月白」這個人物，關鍵字可包含「李月白、月白、李大人、月白大人」。
+- 類似概念合併：同一個人/地點/概念不要拆成多條。
+- 若原文中的描述矛盾或不清楚，以原文為準，不自行補充不存在的設定。
+- 親密向類別請使用原文的用詞與程度，不要自行美化或淡化。
+
+# 輸出格式
+**只輸出 JSON 陣列**，不要任何前言、後語或 markdown code fence。格式如下：
+[
+  {"title":"...","category":"character","keywords":["...","..."],"content":"..."},
+  ...
+]
+
+# 世界觀原文
+${text}`;
+
+    // 關閉 Gemini 的 safety filter（因為使用者可能處理成人向世界觀）
+    const safetySettings = [
+      { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_CIVIC_INTEGRITY', threshold: 'BLOCK_NONE' }
+    ];
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          safetySettings: safetySettings,
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 32768,
+            responseMimeType: 'application/json'
+          }
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`API 錯誤 ${response.status}：${errText.slice(0, 200)}`);
+    }
+
+    const data = await response.json();
+
+    // 檢查是否被 safety filter 擋住
+    const finishReason = data.candidates?.[0]?.finishReason;
+    if (finishReason === 'SAFETY' || finishReason === 'PROHIBITED_CONTENT') {
+      throw new Error('內容被 Gemini 安全過濾器擋下，請嘗試減少露骨描述或分段處理');
+    }
+
+    const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!textResponse) {
+      throw new Error('AI 沒有回傳內容，可能是 API key 有誤或額度用盡');
+    }
+
+    // 嘗試解析 JSON
+    let items;
+    try {
+      // 清理可能的 code fence
+      const cleaned = textResponse.replace(/^```json\s*/i, '').replace(/\s*```\s*$/, '').trim();
+      items = JSON.parse(cleaned);
+    } catch (e) {
+      throw new Error('AI 回傳格式有誤，請重試一次');
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+      throw new Error('AI 沒有整理出任何條目，請換個文本試試');
+    }
+
+    // 標準化欄位
+    state.items = items.map(item => ({
+      title: (item.title || '未命名').slice(0, 50),
+      category: item.category || null,
+      content: (item.content || '').slice(0, 2000),
+      keywords: Array.isArray(item.keywords) ? item.keywords.slice(0, 10) : [],
+      suggested: []
+    }));
+
+    renderResults();
+    showToast(`✨ AI 整理完成，共 ${state.items.length} 條`);
+
+  } catch (err) {
+    console.error(err);
+    showToast('失敗：' + err.message);
+  } finally {
+    clearInterval(progressTimer);
+    parseBtn.disabled = false;
+    parseBtn.style.opacity = '';
+    aiProgress.style.display = 'none';
+  }
+}
+
+// ============ 按標題拆分 ============
+function splitByHeading(text, level) {
+  const lines = text.split('\n');
+  const items = [];
+  let current = null;
+
+  // 決定要抓哪些層級
+  let pattern;
+  if (level === 'all') {
+    pattern = /^(#{1,6})\s+(.+)$/;
+  } else {
+    pattern = new RegExp(`^(#{${level}})\\s+(.+)$`);
+  }
+
+  for (const line of lines) {
+    const match = line.match(pattern);
+    if (match) {
+      if (current) items.push(current);
+      current = { title: match[2].trim(), content: '' };
+    } else if (current) {
+      // 忽略其他層級的標題符號，只保留純文字
+      if (line.match(/^#{1,6}\s+/)) {
+        current.content += line.replace(/^#{1,6}\s+/, '【') + '】\n';
+      } else {
+        current.content += line + '\n';
+      }
+    }
+  }
+  if (current) items.push(current);
+
+  // 清理空白
+  return items.map(item => ({
+    title: item.title,
+    content: item.content.trim()
+  })).filter(item => item.content.length > 0);
+}
+
+// ============ 按空行分段 ============
+function splitByParagraph(text) {
+  // 先試嚴格的空行分段
+  let paragraphs = text.split(/\n\s*\n+/).filter(p => p.trim().length > 30);
+
+  // 若連一段都沒有，退而求其次：按換行拆（每行獨立）
+  if (paragraphs.length <= 1) {
+    paragraphs = text.split(/\n+/).filter(p => p.trim().length > 15);
+  }
+
+  // 還是只有一段，就按句號/驚嘆號/問號切
+  if (paragraphs.length <= 1) {
+    paragraphs = text.split(/(?<=[。！？])\s*/).filter(p => p.trim().length > 15);
+    // 句子太多的話，每 3-5 句合成一段
+    if (paragraphs.length > 5) {
+      const grouped = [];
+      const groupSize = Math.ceil(paragraphs.length / Math.min(paragraphs.length, 8));
+      for (let i = 0; i < paragraphs.length; i += groupSize) {
+        grouped.push(paragraphs.slice(i, i + groupSize).join(''));
+      }
+      paragraphs = grouped;
+    }
+  }
+
+  return paragraphs.map((p, i) => {
+    const lines = p.trim().split('\n');
+    const firstLine = lines[0].replace(/^#+\s*/, '').trim();
+    // 如果第一行像標題（短且沒有句號），當作標題；否則用前 15 字
+    const isTitle = firstLine.length <= 25 && !firstLine.match(/[。，！？；：]/);
+    if (isTitle && lines.length > 1) {
+      return {
+        title: firstLine.slice(0, 50),
+        content: lines.slice(1).join('\n').trim() || firstLine
+      };
+    } else {
+      // 抓前 15 字當標題，去除標點
+      const autoTitle = firstLine.slice(0, 15).replace(/[。，！？；：「」『』、]/g, '').trim();
+      return {
+        title: autoTitle || `片段 ${i + 1}`,
+        content: p.trim()
+      };
+    }
+  });
+}
+
+// ============ 智慧混合 ============
+function splitSmart(text, level) {
+  // 策略：從最精確到最寬鬆，直到能拆出多項
+  // 1. 試指定層級的標題
+  let items = splitByHeading(text, level);
+  if (items.length > 1) return items;
+
+  // 2. 試所有層級的標題
+  items = splitByHeading(text, 'all');
+  if (items.length > 1) return items;
+
+  // 3. 用段落拆分（內含多層降級）
+  items = splitByParagraph(text);
+  if (items.length > 0) return items;
+
+  // 4. 完全沒結構——整篇當一項
+  const firstLine = text.split('\n')[0].slice(0, 20).replace(/[。，！？；：「」『』、#]/g, '').trim();
+  return [{
+    title: firstLine || '世界觀設定',
+    content: text.trim()
+  }];
+}
+
+// ============ 關鍵字提取 ============
+function extractKeywords(content, title) {
+  // 策略：抓出專有名詞候選（連續中文 2-6 字、英文單字），依頻率排序
+  const combined = title + ' ' + content;
+  const freq = {};
+
+  // 中文詞：連續 2-6 個中文字
+  const cnMatches = combined.match(/[\u4e00-\u9fa5々〇〸-〺]{2,6}/g) || [];
+  // 英文詞：2+ 字母單字
+  const enMatches = combined.match(/[A-Za-z][A-Za-z0-9\-]{1,}/g) || [];
+  // 特殊標記（如 P.E. 01）
+  const specialMatches = combined.match(/[A-Z]\.[A-Z]\.\s*\d+|[A-Z]{2,}\d*/g) || [];
+
+  // 對中文做滑動窗口子詞，同時注意常見的「xx 的」「xx 是」這類並非詞
+  cnMatches.forEach(word => {
+    // 過濾停用詞
+    if (STOPWORDS.has(word)) return;
+    // 不要結尾在常見虛詞
+    if (/[的了是在和與或但而也都就才又還已要會能可之為以及其這那此該]$/.test(word)) return;
+    // 不要開頭是虛詞
+    if (/^[的了是在和與或但而也都就才又還已要會能可之為以及其這那此該之於]/.test(word)) return;
+
+    freq[word] = (freq[word] || 0) + (word.length >= 3 ? 2 : 1);
+  });
+
+  enMatches.forEach(word => {
+    const lower = word.toLowerCase();
+    if (STOPWORDS.has(lower) || word.length < 3) return;
+    freq[word] = (freq[word] || 0) + 2;
+  });
+
+  specialMatches.forEach(word => {
+    freq[word] = (freq[word] || 0) + 3;
+  });
+
+  // 如果 word A 是 word B 的子字串且 B 出現次數 >= A-1，移除 A
+  const words = Object.keys(freq).sort((a, b) => freq[b] - freq[a]);
+  const keep = new Set(words);
+  for (const a of words) {
+    for (const b of words) {
+      if (a !== b && b.includes(a) && b.length > a.length && freq[b] >= freq[a] - 1) {
+        keep.delete(a);
+        break;
+      }
+    }
+  }
+
+  // 標題中的字詞加權：標題出現的詞優先
+  const titleWords = new Set();
+  (title.match(/[\u4e00-\u9fa5]{2,6}/g) || []).forEach(w => titleWords.add(w));
+
+  const result = [...keep]
+    .sort((a, b) => {
+      const boostA = titleWords.has(a) ? 10 : 0;
+      const boostB = titleWords.has(b) ? 10 : 0;
+      return (freq[b] + boostB) - (freq[a] + boostA);
+    })
+    .slice(0, 15);
+
+  return result;
+}
+
+// ============ 渲染結果 ============
+function renderResults() {
+  if (state.items.length === 0) {
+    resultsContainer.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">◇ ◇ ◇</div>
+        <div class="empty-state-text">等 待 原 文 投 入</div>
+      </div>`;
+    itemCount.textContent = '尚未拆分';
+    return;
+  }
+
+  itemCount.textContent = `共 ${state.items.length} 項`;
+
+  let html = `
+    <div class="global-actions">
+      <button class="btn-secondary" id="copyAllBtn">❖ 複製全部為 JSON</button>
+      <button class="btn-secondary" id="clearBtn">清空重來</button>
+    </div>
+  `;
+
+  state.items.forEach((item, idx) => {
+    const titleLen = item.title.length;
+    const contentLen = item.content.length;
+    const keywordCount = item.keywords.length;
+
+    const titleClass = titleLen > 50 ? 'over' : (titleLen > 0 ? 'good' : '');
+    const contentClass = contentLen > 2000 ? 'over' : (contentLen > 0 ? 'good' : '');
+    const kwClass = keywordCount > 10 ? 'over' : (keywordCount > 0 ? 'good' : '');
+
+    const suggestedHtml = item.suggested
+      .filter(s => !item.keywords.includes(s))
+      .map(s => `<span class="suggested-chip" data-idx="${idx}" data-word="${escapeHtml(s)}">+ ${escapeHtml(s)}</span>`)
+      .join('');
+
+    const keywordsHtml = item.keywords.map((k, ki) => `
+      <span class="keyword-tag">
+        ${escapeHtml(k)}
+        <span class="remove" data-idx="${idx}" data-ki="${ki}">×</span>
+      </span>
+    `).join('');
+
+    const categoryBadge = item.category && CATEGORY_LABELS[item.category]
+      ? `<span class="item-category-badge cat-${item.category}">${CATEGORY_LABELS[item.category]}</span>`
+      : '';
+
+    html += `
+      <div class="item-card" data-idx="${idx}">
+        <div class="item-header">
+          <span class="item-index">${String(idx + 1).padStart(2, '0')}</span>
+          <input type="text" class="item-title-input" data-idx="${idx}"
+            value="${escapeHtml(item.title)}" placeholder="項目標題" maxlength="50">
+          ${categoryBadge}
+        </div>
+
+        <div class="item-section">
+          <div class="item-section-label">
+            <span>標題字數</span>
+            <span class="count-badge ${titleClass}">${titleLen} / 50</span>
+          </div>
+        </div>
+
+        <div class="item-section">
+          <div class="item-section-label">
+            <span>關鍵字</span>
+            <span class="count-badge ${kwClass}">${keywordCount} / 10</span>
+          </div>
+          <div class="keywords-wrap">
+            ${keywordsHtml}
+            <div class="keyword-add">
+              <input type="text" class="keyword-input" data-idx="${idx}"
+                placeholder="+ 新增" maxlength="20">
+            </div>
+          </div>
+          ${item.suggested.length > 0 ? `
+            <div class="suggested-keywords">
+              <div class="suggested-label">✦ 建議關鍵字（點選加入）</div>
+              ${suggestedHtml}
+            </div>` : ''}
+        </div>
+
+        <div class="item-section">
+          <div class="item-section-label">
+            <span>內容</span>
+            <span class="count-badge ${contentClass}">${contentLen} / 2000</span>
+          </div>
+          <textarea class="item-textarea" data-idx="${idx}" maxlength="2000">${escapeHtml(item.content)}</textarea>
+        </div>
+
+        <div class="item-actions">
+          <button class="btn-delete" data-idx="${idx}">移除此項</button>
+          <button class="btn-copy" data-idx="${idx}">❖ 複 製 此 項</button>
+        </div>
+      </div>
+    `;
+  });
+
+  resultsContainer.innerHTML = html;
+  attachResultListeners();
+}
+
+// ============ 綁定結果區事件 ============
+function attachResultListeners() {
+  // 標題輸入
+  document.querySelectorAll('.item-title-input').forEach(input => {
+    input.addEventListener('input', (e) => {
+      const idx = +e.target.dataset.idx;
+      state.items[idx].title = e.target.value;
+      updateBadge(idx);
+    });
+  });
+
+  // 內容輸入
+  document.querySelectorAll('.item-textarea').forEach(ta => {
+    ta.addEventListener('input', (e) => {
+      const idx = +e.target.dataset.idx;
+      state.items[idx].content = e.target.value;
+      updateBadge(idx);
+    });
+  });
+
+  // 新增關鍵字
+  document.querySelectorAll('.keyword-input').forEach(input => {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const idx = +e.target.dataset.idx;
+        const val = e.target.value.trim();
+        if (val && state.items[idx].keywords.length < 10
+          && !state.items[idx].keywords.includes(val)) {
+          state.items[idx].keywords.push(val);
+          renderResults();
+        } else if (state.items[idx].keywords.length >= 10) {
+          showToast('關鍵字已達 10 個上限');
+        }
+      }
+    });
+  });
+
+  // 移除關鍵字
+  document.querySelectorAll('.keyword-tag .remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = +e.target.dataset.idx;
+      const ki = +e.target.dataset.ki;
+      state.items[idx].keywords.splice(ki, 1);
+      renderResults();
+    });
+  });
+
+  // 建議關鍵字點擊加入
+  document.querySelectorAll('.suggested-chip').forEach(chip => {
+    chip.addEventListener('click', (e) => {
+      const idx = +e.target.dataset.idx;
+      const word = e.target.dataset.word;
+      if (state.items[idx].keywords.length >= 10) {
+        showToast('關鍵字已達 10 個上限');
+        return;
+      }
+      if (!state.items[idx].keywords.includes(word)) {
+        state.items[idx].keywords.push(word);
+        renderResults();
+      }
+    });
+  });
+
+  // 複製單項
+  document.querySelectorAll('.btn-copy').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = +e.target.dataset.idx;
+      const item = state.items[idx];
+      const text = `標題：${item.title}\n關鍵字：${item.keywords.join('、')}\n內容：\n${item.content}`;
+      copyToClipboard(text);
+      e.target.classList.add('copied');
+      e.target.textContent = '✓ 已 複 製';
+      setTimeout(() => {
+        e.target.classList.remove('copied');
+        e.target.innerHTML = '❖ 複 製 此 項';
+      }, 2000);
+    });
+  });
+
+  // 刪除單項
+  document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = +e.target.dataset.idx;
+      if (confirm(`確定移除第 ${idx + 1} 項「${state.items[idx].title}」？`)) {
+        state.items.splice(idx, 1);
+        renderResults();
+      }
+    });
+  });
+
+  // 複製全部
+  document.getElementById('copyAllBtn')?.addEventListener('click', () => {
+    const json = JSON.stringify(state.items.map(i => ({
+      title: i.title,
+      keywords: i.keywords,
+      content: i.content
+    })), null, 2);
+    copyToClipboard(json);
+    showToast('已複製所有項目 (JSON)');
+  });
+
+  // 清空
+  document.getElementById('clearBtn')?.addEventListener('click', () => {
+    if (confirm('清空所有拆分結果？')) {
+      state.items = [];
+      renderResults();
+    }
+  });
+}
+
+// ============ 更新單項字數（不重繪） ============
+function updateBadge(idx) {
+  const card = document.querySelector(`.item-card[data-idx="${idx}"]`);
+  if (!card) return;
+  const item = state.items[idx];
+  const badges = card.querySelectorAll('.count-badge');
+  if (badges[0]) {
+    badges[0].textContent = `${item.title.length} / 50`;
+    badges[0].className = 'count-badge ' + (item.title.length > 50 ? 'over' : (item.title.length > 0 ? 'good' : ''));
+  }
+  if (badges[2]) {
+    badges[2].textContent = `${item.content.length} / 2000`;
+    badges[2].className = 'count-badge ' + (item.content.length > 2000 ? 'over' : (item.content.length > 0 ? 'good' : ''));
+  }
+}
+
+// ============ 輔助函式 ============
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('已複製到剪貼簿'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('已複製到剪貼簿');
+  }
+}
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
