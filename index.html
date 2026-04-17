@@ -636,6 +636,46 @@
     opacity: 0.6;
   }
 
+  /* 模式說明 */
+  .mode-hint {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 12px 16px;
+    background: var(--ink);
+    border-left: 2px solid var(--gold);
+    border-radius: 0 2px 2px 0;
+    margin-top: 4px;
+  }
+
+  .mode-hint-label {
+    font-family: var(--serif);
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .mode-hint-text {
+    font-family: var(--serif);
+    font-size: 12px;
+    color: var(--paper-soft);
+    letter-spacing: 1px;
+    line-height: 1.7;
+  }
+
+  .mode-hint-text code {
+    background: var(--ink-soft);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0;
+    margin: 0 2px;
+  }
+
   .chip {
     display: inline-flex;
     align-items: center;
@@ -2377,6 +2417,12 @@
         <button class="chip" data-level="3">### 三級</button>
         <button class="chip" data-level="all">全部</button>
       </div>
+
+      <!-- 模式說明 -->
+      <div class="mode-hint" id="modeHint">
+        <span class="mode-hint-label">當前策略</span>
+        <span class="mode-hint-text" id="modeHintText">找到 <code>##</code> 就用二級標題切；找不到就降級按空行段落；空行都沒有就按句號切</span>
+      </div>
     </div>
 
     <button class="btn-primary" id="parseBtn">
@@ -2505,11 +2551,23 @@ fileInput.addEventListener('change', (e) => {
 });
 
 // ============ 選項切換 ============
+const MODE_HINTS = {
+  heading: '只找 Markdown 標題（<code>#</code> 開頭的行）做切點。<strong>若原文沒有標題會失敗</strong>，建議搭配已有結構的文件使用。',
+  paragraph: '直接用「空行」分段。若原文沒有空行，會降級按句號切，每 3-5 句合成一段。<strong>原文為純連續文字時適用</strong>。',
+  smart: '自動嘗試多種策略：先找 <code>##</code> 標題 → 找不到試所有層級 → 再降級空行分段 → 最後按句號。<strong>不確定就選這個</strong>。'
+};
+
+function updateModeHint() {
+  const hintEl = document.getElementById('modeHintText');
+  if (hintEl) hintEl.innerHTML = MODE_HINTS[state.splitMode] || '';
+}
+
 document.querySelectorAll('.chip[data-split]').forEach(chip => {
   chip.addEventListener('click', () => {
     document.querySelectorAll('.chip[data-split]').forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
     state.splitMode = chip.dataset.split;
+    updateModeHint();
   });
 });
 
@@ -2518,8 +2576,12 @@ document.querySelectorAll('.chip[data-level]').forEach(chip => {
     document.querySelectorAll('.chip[data-level]').forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
     state.headingLevel = chip.dataset.level;
+    updateModeHint();
   });
 });
+
+// 初始化提示文字
+updateModeHint();
 
 // ============ 類別切換與自訂類別 ============
 function updateCategoriesFromDOM() {
@@ -2734,12 +2796,24 @@ parseBtn.addEventListener('click', async () => {
 // ============ 規則拆分 ============
 function runRuleSplit(text) {
   let items = [];
+  let strategyUsed = '';
+
   if (state.splitMode === 'heading') {
     items = splitByHeading(text, state.headingLevel);
+    const levelLabel = state.headingLevel === 'all' ? '所有層級' : `${state.headingLevel} 級`;
+    if (items.length === 0) {
+      showToast(`找不到 Markdown ${levelLabel}標題，請換「依空行分段」或「智慧混合」`);
+      return;
+    }
+    strategyUsed = `依 Markdown ${levelLabel}標題`;
   } else if (state.splitMode === 'paragraph') {
-    items = splitByParagraph(text);
+    const result = splitByParagraphTracked(text);
+    items = result.items;
+    strategyUsed = result.strategy;
   } else {
-    items = splitSmart(text, state.headingLevel);
+    const result = splitSmartTracked(text, state.headingLevel);
+    items = result.items;
+    strategyUsed = result.strategy;
   }
 
   if (items.length === 0) {
@@ -2755,7 +2829,9 @@ function runRuleSplit(text) {
   }));
 
   state.items = items;
+  state.lastStrategy = strategyUsed;
   renderResults();
+  showToast(`拆出 ${items.length} 條 · 策略：${strategyUsed}`);
 }
 
 // ============ AI 智慧整理 ============
@@ -2993,19 +3069,22 @@ function splitByHeading(text, level) {
   })).filter(item => item.content.length > 0);
 }
 
-// ============ 按空行分段 ============
-function splitByParagraph(text) {
+// ============ 按空行分段（記錄策略版） ============
+function splitByParagraphTracked(text) {
   // 先試嚴格的空行分段
   let paragraphs = text.split(/\n\s*\n+/).filter(p => p.trim().length > 30);
+  let strategy = '依空行分段';
 
   // 若連一段都沒有，退而求其次：按換行拆（每行獨立）
   if (paragraphs.length <= 1) {
     paragraphs = text.split(/\n+/).filter(p => p.trim().length > 15);
+    strategy = '按換行拆（原文未出現空行）';
   }
 
   // 還是只有一段，就按句號/驚嘆號/問號切
   if (paragraphs.length <= 1) {
     paragraphs = text.split(/(?<=[。！？])\s*/).filter(p => p.trim().length > 15);
+    strategy = '按句號切（原文為單段連續文字）';
     // 句子太多的話，每 3-5 句合成一段
     if (paragraphs.length > 5) {
       const grouped = [];
@@ -3017,10 +3096,9 @@ function splitByParagraph(text) {
     }
   }
 
-  return paragraphs.map((p, i) => {
+  const items = paragraphs.map((p, i) => {
     const lines = p.trim().split('\n');
     const firstLine = lines[0].replace(/^#+\s*/, '').trim();
-    // 如果第一行像標題（短且沒有句號），當作標題；否則用前 15 字
     const isTitle = firstLine.length <= 25 && !firstLine.match(/[。，！？；：]/);
     if (isTitle && lines.length > 1) {
       return {
@@ -3028,7 +3106,6 @@ function splitByParagraph(text) {
         content: lines.slice(1).join('\n').trim() || firstLine
       };
     } else {
-      // 抓前 15 字當標題，去除標點
       const autoTitle = firstLine.slice(0, 15).replace(/[。，！？；：「」『』、]/g, '').trim();
       return {
         title: autoTitle || `片段 ${i + 1}`,
@@ -3036,29 +3113,50 @@ function splitByParagraph(text) {
       };
     }
   });
+
+  return { items, strategy };
 }
 
-// ============ 智慧混合 ============
-function splitSmart(text, level) {
-  // 策略：從最精確到最寬鬆，直到能拆出多項
+// 保留舊 function 簽章給其他地方呼叫
+function splitByParagraph(text) {
+  return splitByParagraphTracked(text).items;
+}
+
+// ============ 智慧混合（記錄策略版） ============
+function splitSmartTracked(text, level) {
   // 1. 試指定層級的標題
   let items = splitByHeading(text, level);
-  if (items.length > 1) return items;
+  if (items.length > 1) {
+    const levelLabel = level === 'all' ? '所有層級' : `${level} 級`;
+    return { items, strategy: `智慧混合 → 依 Markdown ${levelLabel}標題` };
+  }
 
   // 2. 試所有層級的標題
   items = splitByHeading(text, 'all');
-  if (items.length > 1) return items;
+  if (items.length > 1) {
+    return { items, strategy: `智慧混合 → 依 Markdown 所有層級標題` };
+  }
 
   // 3. 用段落拆分（內含多層降級）
-  items = splitByParagraph(text);
-  if (items.length > 0) return items;
+  const paraResult = splitByParagraphTracked(text);
+  if (paraResult.items.length > 0) {
+    return { items: paraResult.items, strategy: `智慧混合 → ${paraResult.strategy}` };
+  }
 
   // 4. 完全沒結構——整篇當一項
   const firstLine = text.split('\n')[0].slice(0, 20).replace(/[。，！？；：「」『』、#]/g, '').trim();
-  return [{
-    title: firstLine || '世界觀設定',
-    content: text.trim()
-  }];
+  return {
+    items: [{
+      title: firstLine || '世界觀設定',
+      content: text.trim()
+    }],
+    strategy: '智慧混合 → 整篇歸為一項'
+  };
+}
+
+// 保留舊 function 給向下相容
+function splitSmart(text, level) {
+  return splitSmartTracked(text, level).items;
 }
 
 // ============ 關鍵字提取 ============
