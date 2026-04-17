@@ -2115,7 +2115,21 @@
     letter-spacing: 1.5px;
     color: var(--gold);
     opacity: 0.8;
-    margin-bottom: 40px;
+    margin-bottom: 24px;
+  }
+
+  .dialogue-empty-tagline {
+    font-family: var(--serif);
+    font-size: 12px;
+    color: var(--paper-soft);
+    letter-spacing: 1px;
+    line-height: 2;
+    padding: 16px 24px;
+    background: var(--ink);
+    border-left: 2px solid var(--gold);
+    border-radius: 0 2px 2px 0;
+    margin-bottom: 36px;
+    text-align: left;
   }
 
   .dialogue-empty-hints {
@@ -3436,19 +3450,23 @@
             <div class="dialogue-empty-divider"></div>
             <div class="dialogue-empty-title">開始設計你的 Lorebook</div>
             <div class="dialogue-empty-subtitle">Start designing your lorebook entries</div>
+            <div class="dialogue-empty-tagline">
+              讓 AI 協助你設計「關鍵字觸發式」的條目——<br>
+              角色扮演時，AI 讀到觸發詞就會執行對應的行為或呈現設定。
+            </div>
             <div class="dialogue-empty-hints">
               <div class="dialogue-hint-title">— 你可以這樣問 —</div>
-              <button class="dialogue-hint-chip" data-preset="幫我寫一個『存檔』的設定，用於跨時空穿越的奇幻世界">
-                幫我寫一個「存檔」的設定
+              <button class="dialogue-hint-chip" data-preset="幫我設計一個觸發詞「存檔」的 lorebook：當我在劇情中輸入「存檔」時，AI 要暫停劇情、整理當前狀態（時間、地點、在場人物、關鍵事件）並以框格呈現">
+                設計「存檔」觸發指令
               </button>
-              <button class="dialogue-hint-chip" data-preset="設計一組學院派魔法體系，包含五大學派與代表人物">
-                設計一組學院派魔法體系
+              <button class="dialogue-hint-chip" data-preset="幫我設計一個觸發詞「擲骰」的 lorebook：當我輸入「擲骰」時，AI 要隨機生成 1-100 的結果，並根據結果推進劇情走向">
+                設計「擲骰」觸發指令
               </button>
-              <button class="dialogue-hint-chip" data-preset="幫我寫一個冷峻男主角的人物設定，職業是刑警">
-                冷峻男主角人物設定
+              <button class="dialogue-hint-chip" data-preset="幫我寫一個人物角色的 lorebook 條目，人物是冷峻內斂的刑警，包含外貌、性格、說話風格，關鍵字要涵蓋他的稱呼與別名">
+                人物角色條目
               </button>
-              <button class="dialogue-hint-chip" data-preset="虛構一座神秘的東方古城,有特殊的風俗禁忌">
-                虛構一座神秘的古城
+              <button class="dialogue-hint-chip" data-preset="幫我寫一組魔法體系的 lorebook 條目，五大學派，每條都包含學派名、核心理念、代表魔法，關鍵字要能覆蓋劇情中可能的各種稱呼">
+                魔法體系多條條目
               </button>
             </div>
           </div>
