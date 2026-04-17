@@ -3408,6 +3408,164 @@
     .dialogue-hint-chip { font-size: 11px; padding: 8px 14px; }
   }
 
+  /* ============ 通用確認對話框 ============ */
+  .confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    padding: 20px;
+  }
+
+  .confirm-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .confirm-box {
+    background: var(--card-bg);
+    border: 1px solid var(--ink-line);
+    border-radius: 3px;
+    padding: 36px 32px 24px;
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+  }
+
+  .confirm-overlay.show .confirm-box {
+    transform: translateY(0) scale(1);
+  }
+
+  .confirm-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 24px;
+    right: 24px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.6;
+  }
+
+  .confirm-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+
+  .confirm-icon {
+    font-family: var(--display);
+    font-style: italic;
+    color: var(--gold);
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 0.9;
+    min-width: 24px;
+  }
+
+  .confirm-icon.danger {
+    color: var(--vermilion);
+  }
+
+  .confirm-title {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    padding-left: 14px;
+    border-left: 1px solid var(--ink-line);
+    color: var(--paper);
+  }
+
+  .confirm-hairline {
+    height: 1px;
+    background: var(--ink-line);
+    margin: 0 0 20px;
+    position: relative;
+  }
+
+  .confirm-hairline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 28px;
+    height: 2px;
+    background: var(--gold);
+    margin-top: -0.5px;
+  }
+
+  .confirm-message {
+    font-family: var(--serif);
+    font-size: 13px;
+    color: var(--paper);
+    letter-spacing: 1px;
+    line-height: 1.9;
+    margin-bottom: 8px;
+    white-space: pre-wrap;
+  }
+
+  .confirm-message strong {
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .confirm-sub {
+    font-family: var(--italic);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--paper-soft);
+    letter-spacing: 0.5px;
+    line-height: 1.7;
+    padding: 10px 14px;
+    background: var(--ink);
+    border-left: 2px solid var(--gold-dim);
+    border-radius: 0 2px 2px 0;
+    margin-bottom: 8px;
+  }
+
+  .confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--ink-line);
+  }
+
+  .confirm-actions .modal-btn-confirm.danger {
+    background: var(--vermilion);
+    border-color: var(--vermilion);
+  }
+
+  .confirm-actions .modal-btn-confirm.danger:hover {
+    opacity: 0.85;
+  }
+
+  @media (max-width: 480px) {
+    .confirm-box {
+      padding: 28px 22px 20px;
+    }
+    .confirm-title {
+      font-size: 13px;
+      letter-spacing: 3px;
+    }
+    .confirm-message {
+      font-size: 12px;
+    }
+  }
+
   /* ============ 自訂對話框 ============ */
   .modal-overlay {
     position: fixed;
@@ -4373,6 +4531,23 @@
   </div>
 </div>
 
+<!-- 通用確認對話框 -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-header">
+      <span class="confirm-icon" id="confirmIcon">?</span>
+      <span class="confirm-title" id="confirmTitle">確認</span>
+    </div>
+    <div class="confirm-hairline"></div>
+    <div class="confirm-message" id="confirmMessage"></div>
+    <div class="confirm-sub" id="confirmSub" style="display:none;"></div>
+    <div class="confirm-actions">
+      <button class="modal-btn modal-btn-cancel" id="confirmCancelBtn">取消</button>
+      <button class="modal-btn modal-btn-confirm" id="confirmOkBtn">確認</button>
+    </div>
+  </div>
+</div>
+
 <!-- AI 檢查報告彈出頁 -->
 <div class="check-report-overlay" id="checkReportOverlay">
   <div class="check-report-panel">
@@ -4827,9 +5002,16 @@ function renderSidebar() {
       if (e.target.classList.contains('sidebar-item-delete')) return;
       switchSession(session.id);
     });
-    item.querySelector('.sidebar-item-delete').addEventListener('click', (e) => {
+    item.querySelector('.sidebar-item-delete').addEventListener('click', async (e) => {
       e.stopPropagation();
-      if (confirm(`確定刪除「${session.title}」這個對話？`)) {
+      const ok = await customConfirm({
+        title: '刪除對話',
+        message: `確定要刪除「${session.title}」這個對話嗎？`,
+        sub: '此對話的所有訊息紀錄將無法復原。',
+        okText: '刪除',
+        danger: true
+      });
+      if (ok) {
         deleteSession(session.id);
       }
     });
@@ -6333,9 +6515,16 @@ function attachResultListeners() {
 
   // 刪除單項
   document.querySelectorAll('.btn-delete').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
       const idx = +e.target.dataset.idx;
-      if (confirm(`確定移除第 ${idx + 1} 項「${state.items[idx].title}」？`)) {
+      const title = state.items[idx].title || '（無標題）';
+      const ok = await customConfirm({
+        title: '移除條目',
+        message: `確定要移除第 ${idx + 1} 項「${title}」嗎？`,
+        okText: '移除',
+        danger: true
+      });
+      if (ok) {
         state.items.splice(idx, 1);
         renderResults();
       }
@@ -6409,8 +6598,16 @@ function attachResultListeners() {
   }, { once: false });
 
   // 清空
-  document.getElementById('clearBtn')?.addEventListener('click', () => {
-    if (confirm('清空整個 Lorebook 設定集？')) {
+  document.getElementById('clearBtn')?.addEventListener('click', async () => {
+    const count = state.items.length;
+    const ok = await customConfirm({
+      title: '清空設定集',
+      message: `確定要清空整個 Lorebook 設定集嗎？`,
+      sub: `共有 ${count} 條條目將被移除，此動作無法復原。建議先匯出備份。`,
+      okText: '全部清空',
+      danger: true
+    });
+    if (ok) {
       state.items = [];
       state.ui.selectedIds.clear();
       renderResults();
@@ -6476,10 +6673,16 @@ function attachResultListeners() {
   });
 
   // 批次刪除
-  document.getElementById('batchDeleteBtn')?.addEventListener('click', () => {
+  document.getElementById('batchDeleteBtn')?.addEventListener('click', async () => {
     const count = state.ui.selectedIds.size;
     if (count === 0) return;
-    if (!confirm(`確定刪除選取的 ${count} 項？`)) return;
+    const ok = await customConfirm({
+      title: '批次刪除',
+      message: `確定要刪除選取的 ${count} 項嗎？`,
+      okText: '刪除',
+      danger: true
+    });
+    if (!ok) return;
     // 從大到小 idx 刪除避免索引偏移
     const idxsToDelete = [...state.ui.selectedIds].sort((a, b) => b - a);
     idxsToDelete.forEach(idx => state.items.splice(idx, 1));
@@ -6611,10 +6814,16 @@ function attachToolbarOnlyListeners() {
     state.ui.selectedIds.clear();
     renderResults();
   });
-  document.getElementById('batchDeleteBtn')?.addEventListener('click', () => {
+  document.getElementById('batchDeleteBtn')?.addEventListener('click', async () => {
     const count = state.ui.selectedIds.size;
     if (count === 0) return;
-    if (!confirm(`確定刪除選取的 ${count} 項？`)) return;
+    const ok = await customConfirm({
+      title: '批次刪除',
+      message: `確定要刪除選取的 ${count} 項嗎？`,
+      okText: '刪除',
+      danger: true
+    });
+    if (!ok) return;
     const idxsToDelete = [...state.ui.selectedIds].sort((a, b) => b - a);
     idxsToDelete.forEach(idx => state.items.splice(idx, 1));
     state.ui.selectedIds.clear();
@@ -7098,9 +7307,14 @@ async function aiExpandContent(idx, btnEl) {
   }
 
   // 確認（因為會覆蓋原本的 content）
-  if (!confirm(`AI 會根據目前的內容擴充細節，原本的內容會被替換（但會保留核心設定）。\n\n要繼續嗎？`)) {
-    return;
-  }
+  const ok = await customConfirm({
+    title: 'AI 擴充內容',
+    message: `AI 會根據目前的內容擴充到 1200-1800 字，原本的內容會被替換。`,
+    sub: '核心設定會被保留，但細節部分會重寫。如需保險請先匯出備份。',
+    okText: '開始擴充',
+    icon: '✦'
+  });
+  if (!ok) return;
 
   btnEl.disabled = true;
   const originalHtml = btnEl.innerHTML;
@@ -7586,7 +7800,7 @@ function exportLorebook(format, scope) {
 }
 
 // ============ 匯入 Lorebook ============
-function importLorebook(jsonText) {
+async function importLorebook(jsonText) {
   const data = JSON.parse(jsonText);
   let importedItems = [];
   let importedCustomCats = [];
@@ -7615,12 +7829,11 @@ function importLorebook(jsonText) {
   const currentCount = state.items?.length || 0;
   let action = 'replace';
   if (currentCount > 0) {
-    const confirmed = confirm(
-      `目前設定集有 ${currentCount} 條，要匯入的檔案有 ${importedItems.length} 條。\n\n` +
-      `按「確定」= 合併（在現有條目後追加）\n` +
-      `按「取消」= 直接覆蓋`
-    );
-    action = confirmed ? 'append' : 'replace';
+    action = await customImportConfirm(currentCount, importedItems.length);
+    if (action === 'cancel') {
+      showToast('已取消匯入');
+      return;
+    }
   }
 
   // 標準化匯入的 items
@@ -7713,6 +7926,124 @@ function showToast(msg) {
   toast.classList.add('show');
   clearTimeout(toast._t);
   toast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+// ============ 美化版確認對話框（取代瀏覽器原生 confirm） ============
+function customConfirm(options) {
+  // options = { title?, message, sub?, okText?, cancelText?, danger?, icon? }
+  return new Promise((resolve) => {
+    const overlay = document.getElementById('confirmOverlay');
+    const iconEl = document.getElementById('confirmIcon');
+    const titleEl = document.getElementById('confirmTitle');
+    const messageEl = document.getElementById('confirmMessage');
+    const subEl = document.getElementById('confirmSub');
+    const okBtn = document.getElementById('confirmOkBtn');
+    const cancelBtn = document.getElementById('confirmCancelBtn');
+
+    const opts = typeof options === 'string' ? { message: options } : (options || {});
+
+    // 設定內容
+    iconEl.textContent = opts.icon || (opts.danger ? '!' : '?');
+    iconEl.classList.toggle('danger', !!opts.danger);
+    titleEl.textContent = opts.title || '確認';
+    messageEl.textContent = opts.message || '';
+    if (opts.sub) {
+      subEl.textContent = opts.sub;
+      subEl.style.display = 'block';
+    } else {
+      subEl.style.display = 'none';
+    }
+    okBtn.textContent = opts.okText || '確認';
+    cancelBtn.textContent = opts.cancelText || '取消';
+    okBtn.classList.toggle('danger', !!opts.danger);
+
+    // 顯示
+    overlay.classList.add('show');
+
+    // 事件清理
+    const cleanup = () => {
+      overlay.classList.remove('show');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      overlay.removeEventListener('click', onOverlayClick);
+      document.removeEventListener('keydown', onKey);
+    };
+    const onOk = () => { cleanup(); resolve(true); };
+    const onCancel = () => { cleanup(); resolve(false); };
+    const onOverlayClick = (e) => { if (e.target === overlay) onCancel(); };
+    const onKey = (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); onOk(); }
+      else if (e.key === 'Escape') { e.preventDefault(); onCancel(); }
+    };
+
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    overlay.addEventListener('click', onOverlayClick);
+    document.addEventListener('keydown', onKey);
+
+    // 預設聚焦在確認按鈕（但危險操作例外，需使用者主動選）
+    setTimeout(() => {
+      if (opts.danger) {
+        cancelBtn.focus();
+      } else {
+        okBtn.focus();
+      }
+    }, 100);
+  });
+}
+
+// ============ 匯入專用：三選對話框（合併/覆蓋/取消） ============
+function customImportConfirm(currentCount, incomingCount) {
+  return new Promise((resolve) => {
+    const overlay = document.getElementById('confirmOverlay');
+    const iconEl = document.getElementById('confirmIcon');
+    const titleEl = document.getElementById('confirmTitle');
+    const messageEl = document.getElementById('confirmMessage');
+    const subEl = document.getElementById('confirmSub');
+    const actionsEl = overlay.querySelector('.confirm-actions');
+
+    // 設定內容
+    iconEl.textContent = '⇣';
+    iconEl.classList.remove('danger');
+    titleEl.textContent = '匯入設定集';
+    messageEl.textContent = `目前有 ${currentCount} 條，匯入檔案中有 ${incomingCount} 條。`;
+    subEl.textContent = '請選擇處理方式：合併會保留現有條目，覆蓋會清空重來。';
+    subEl.style.display = 'block';
+
+    // 儲存原本按鈕 HTML，稍後還原
+    const originalActions = actionsEl.innerHTML;
+    actionsEl.innerHTML = `
+      <button class="modal-btn modal-btn-cancel" id="importCancelBtn">取消</button>
+      <button class="modal-btn modal-btn-cancel" id="importReplaceBtn" style="color:var(--vermilion);border-color:var(--vermilion);">覆蓋</button>
+      <button class="modal-btn modal-btn-confirm" id="importAppendBtn">合併</button>
+    `;
+
+    overlay.classList.add('show');
+
+    const cleanup = (result) => {
+      overlay.classList.remove('show');
+      actionsEl.innerHTML = originalActions; // 還原
+      document.removeEventListener('keydown', onKey);
+      resolve(result);
+    };
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); cleanup('cancel'); }
+    };
+
+    document.getElementById('importAppendBtn').addEventListener('click', () => cleanup('append'));
+    document.getElementById('importReplaceBtn').addEventListener('click', () => cleanup('replace'));
+    document.getElementById('importCancelBtn').addEventListener('click', () => cleanup('cancel'));
+    overlay.addEventListener('click', function onOverlay(e) {
+      if (e.target === overlay) {
+        overlay.removeEventListener('click', onOverlay);
+        cleanup('cancel');
+      }
+    });
+    document.addEventListener('keydown', onKey);
+
+    setTimeout(() => document.getElementById('importAppendBtn')?.focus(), 100);
+  });
 }
 
 // ============ PWA Service Worker 註冊 ============
