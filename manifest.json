@@ -1,0 +1,27 @@
+{
+  "name": "卿卿我我 Lorebook 設定集轉換",
+  "short_name": "設定集轉換",
+  "description": "為 LoveyDovey 設計的 Lorebook 設定集整理與生成工具，支援 AI 智慧整理、對話設計、一鍵匯出多種格式。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fff9f9",
+  "theme_color": "#d88aa5",
+  "lang": "zh-TW",
+  "categories": ["productivity", "utilities", "lifestyle"],
+  "icons": [
+    {
+      "src": "./assets/titi-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/titi-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

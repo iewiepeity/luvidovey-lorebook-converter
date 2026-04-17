@@ -2,8 +2,21 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>設定集轉換小工具</title>
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#d88aa5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2d2040" media="(prefers-color-scheme: dark)">
+<meta name="description" content="為 LoveyDovey 設計的 Lorebook 設定集整理與生成工具，支援 AI 智慧整理、對話設計、一鍵匯出。">
+
+<!-- iOS PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="設定集轉換">
+<link rel="apple-touch-icon" href="./assets/titi-logo.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;300;400;500;600;700&family=Noto+Sans+TC:wght@200;300;400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -331,6 +344,36 @@
     content: '✓';
     margin-left: auto;
     color: var(--gold);
+  }
+
+  .theme-menu-divider {
+    height: 1px;
+    background: var(--ink-line);
+    margin: 6px 10px;
+    opacity: 0.6;
+  }
+
+  .theme-option-auto {
+    position: relative;
+  }
+
+  .theme-name-sub {
+    font-family: var(--italic);
+    font-style: italic;
+    font-size: 10px;
+    color: var(--paper-soft);
+    letter-spacing: 0.5px;
+    margin-left: auto;
+    opacity: 0.7;
+  }
+
+  .theme-option.active .theme-name-sub {
+    opacity: 1;
+    color: var(--gold);
+  }
+
+  .theme-option.active.theme-option-auto::after {
+    margin-left: 0;
   }
 
   @media (max-width: 640px) {
@@ -4105,6 +4148,12 @@
       <span class="theme-arrow">▾</span>
     </button>
     <div class="theme-menu" id="themeMenu">
+      <button class="theme-option theme-option-auto" data-theme="auto">
+        <span class="theme-swatch" style="background:linear-gradient(135deg,#f2f2f2 50%,#2a2a2a 50%)"></span>
+        <span class="theme-name">自動</span>
+        <span class="theme-name-sub">跟隨系統</span>
+      </button>
+      <div class="theme-menu-divider"></div>
       <button class="theme-option" data-theme="sakura">
         <span class="theme-swatch" style="background:linear-gradient(135deg,#ffeff4,#d88aa5)"></span>
         <span class="theme-name">櫻花粉嫩</span>
@@ -5298,29 +5347,62 @@ const THEMES = {
   mono:        { name: '極簡白灰', swatch: 'linear-gradient(135deg,#f2f2f2,#555)' }
 };
 
+// 自動模式：淺色時用 sakura，深色時用 nightsakura
+const AUTO_THEME = {
+  light: 'sakura',
+  dark: 'nightsakura'
+};
+
 const themeDropdown = document.querySelector('.theme-dropdown');
 const themeTrigger = document.getElementById('themeTrigger');
 const themeMenu = document.getElementById('themeMenu');
 const currentThemeName = document.getElementById('currentThemeName');
 const currentSwatch = document.getElementById('currentSwatch');
 
-function applyTheme(themeKey) {
-  if (!THEMES[themeKey]) themeKey = 'sakura';
-  document.documentElement.setAttribute('data-theme', themeKey);
-  currentThemeName.textContent = THEMES[themeKey].name;
-  currentSwatch.style.background = THEMES[themeKey].swatch;
+// 偵測系統深色
+const systemDarkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+function resolveAutoTheme() {
+  return systemDarkQuery.matches ? AUTO_THEME.dark : AUTO_THEME.light;
+}
+
+function applyTheme(themeKey, opts = {}) {
+  // 'auto' 不是真實主題，要解析成實際主題
+  if (themeKey === 'auto') {
+    const actual = resolveAutoTheme();
+    document.documentElement.setAttribute('data-theme', actual);
+    document.documentElement.setAttribute('data-theme-mode', 'auto');
+    currentThemeName.textContent = `自動 · ${THEMES[actual].name}`;
+    currentSwatch.style.background = 'linear-gradient(135deg, #f2f2f2 50%, #2a2a2a 50%)';
+  } else {
+    if (!THEMES[themeKey]) themeKey = 'sakura';
+    document.documentElement.setAttribute('data-theme', themeKey);
+    document.documentElement.removeAttribute('data-theme-mode');
+    currentThemeName.textContent = THEMES[themeKey].name;
+    currentSwatch.style.background = THEMES[themeKey].swatch;
+  }
 
   // 標記當前選中項
   document.querySelectorAll('.theme-option').forEach(opt => {
     opt.classList.toggle('active', opt.dataset.theme === themeKey);
   });
 
-  localStorage.setItem('lorebook_theme', themeKey);
+  if (!opts.skipSave) {
+    localStorage.setItem('lorebook_theme', themeKey);
+  }
 }
 
 // 初始化：讀取儲存的主題或用預設
 const savedTheme = localStorage.getItem('lorebook_theme') || 'sakura';
 applyTheme(savedTheme);
+
+// 系統深色切換時，若是 auto 模式自動切換
+systemDarkQuery.addEventListener('change', () => {
+  const currentMode = localStorage.getItem('lorebook_theme');
+  if (currentMode === 'auto') {
+    applyTheme('auto', { skipSave: true });
+  }
+});
 
 // 點擊觸發按鈕開關選單
 themeTrigger.addEventListener('click', (e) => {
@@ -7631,6 +7713,27 @@ function showToast(msg) {
   toast.classList.add('show');
   clearTimeout(toast._t);
   toast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+// ============ PWA Service Worker 註冊 ============
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      // 有新版可用時提示使用者
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        if (!newSW) return;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            // 已有舊版在跑 + 新版 ready → 提示
+            showToast('新版已就緒，重新整理即可更新');
+          }
+        });
+      });
+    }).catch(() => {
+      // 註冊失敗就靜默忽略（可能是 localhost 或檔案協議）
+    });
+  });
 }
 </script>
 </body>
