@@ -1231,6 +1231,57 @@
     align-items: center;
   }
 
+  .btn-ai {
+    padding: 9px 16px;
+    background: transparent;
+    color: var(--gold);
+    border: 1px dashed var(--gold-dim);
+    font-family: var(--serif);
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    font-weight: 400;
+    transition: all 0.25s;
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-ai:hover {
+    border-style: solid;
+    border-color: var(--gold);
+    background: var(--ink);
+  }
+
+  .btn-ai:disabled {
+    opacity: 0.5;
+    cursor: wait;
+  }
+
+  .btn-ai-icon {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--gold);
+    line-height: 1;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+
+  .btn-ai:disabled .btn-ai-icon {
+    animation: spin 1.2s linear infinite;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
   .btn-image {
     padding: 9px 20px;
     background: transparent;
@@ -1254,11 +1305,18 @@
   @media (max-width: 640px) {
     .item-actions-right {
       gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
     .btn-image {
       padding: 7px 14px;
       font-size: 11px;
       letter-spacing: 2px;
+    }
+    .btn-ai {
+      padding: 7px 12px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
     }
   }
 
@@ -2277,6 +2335,360 @@
     --cat-color: var(--gold-deep);
     --cat-bg: var(--ink-soft);
     --cat-border: var(--gold-dim);
+  }
+
+  /* ============ AI 品質檢查報告 ============ */
+  .check-report-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    z-index: 1600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .check-report-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .check-report-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--ink-line);
+    border-radius: 3px;
+    width: 100%;
+    max-width: 820px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .check-report-overlay.show .check-report-panel {
+    transform: translateY(0) scale(1);
+  }
+
+  .check-report-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 28px;
+    right: 28px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.6;
+  }
+
+  .check-report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--ink-line);
+    flex-shrink: 0;
+  }
+
+  .check-report-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .check-report-num {
+    font-family: var(--display);
+    color: var(--gold);
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  .check-report-title-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .check-report-title-cn {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 6px;
+    color: var(--paper);
+  }
+
+  .check-report-title-en {
+    font-family: var(--italic);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    opacity: 0.8;
+  }
+
+  /* 進度區 */
+  .check-progress {
+    padding: 80px 40px;
+    text-align: center;
+  }
+
+  .check-progress-spinner {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 24px;
+    border: 2px solid var(--ink-line);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .check-progress-text {
+    font-family: var(--serif);
+    font-size: 14px;
+    color: var(--paper);
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+  }
+
+  .check-progress-hint {
+    font-family: var(--italic);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--paper-soft);
+    letter-spacing: 1px;
+    opacity: 0.7;
+  }
+
+  /* 報告內容 */
+  .check-report-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 32px 32px;
+  }
+
+  .check-summary {
+    background: var(--ink);
+    border-left: 2px solid var(--gold);
+    padding: 18px 22px;
+    margin-bottom: 28px;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .check-summary-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 14px;
+    margin-top: 10px;
+  }
+
+  .check-stat {
+    text-align: center;
+  }
+
+  .check-stat-num {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 28px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .check-stat-num.good { color: var(--moss); }
+  .check-stat-num.warn { color: var(--gold); }
+  .check-stat-num.bad { color: var(--vermilion); }
+
+  .check-stat-label {
+    font-family: var(--serif);
+    font-size: 11px;
+    color: var(--paper-soft);
+    letter-spacing: 2px;
+  }
+
+  .check-summary-text {
+    font-family: var(--serif);
+    font-size: 13px;
+    color: var(--paper);
+    line-height: 1.8;
+    letter-spacing: 0.5px;
+  }
+
+  .check-section {
+    margin-bottom: 28px;
+  }
+
+  .check-section-header {
+    font-family: var(--serif);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    color: var(--paper);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--ink-line);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .check-section-icon {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--gold);
+  }
+
+  .check-issue {
+    padding: 14px 18px;
+    background: var(--card-bg);
+    border: 1px solid var(--ink-line);
+    border-left: 3px solid var(--gold-dim);
+    border-radius: 2px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .check-issue:hover {
+    border-left-color: var(--gold);
+    background: var(--ink);
+  }
+
+  .check-issue.severity-high { border-left-color: var(--vermilion); }
+  .check-issue.severity-medium { border-left-color: var(--gold); }
+  .check-issue.severity-low { border-left-color: var(--moss); }
+
+  .check-issue-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+
+  .check-issue-idx {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--gold);
+  }
+
+  .check-issue-title {
+    font-family: var(--serif);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--paper);
+    letter-spacing: 1px;
+  }
+
+  .check-issue-severity {
+    font-family: var(--italic);
+    font-style: italic;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    margin-left: auto;
+  }
+
+  .check-issue-severity.high {
+    background: var(--vermilion);
+    color: var(--card-bg);
+  }
+  .check-issue-severity.medium {
+    background: var(--gold);
+    color: var(--card-bg);
+  }
+  .check-issue-severity.low {
+    background: var(--moss);
+    color: var(--card-bg);
+  }
+
+  .check-issue-message {
+    font-family: var(--serif);
+    font-size: 12px;
+    color: var(--paper-soft);
+    line-height: 1.7;
+    letter-spacing: 0.5px;
+  }
+
+  .check-issue-suggestion {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--ink);
+    border-radius: 2px;
+    font-family: var(--serif);
+    font-size: 12px;
+    color: var(--paper);
+    line-height: 1.7;
+    letter-spacing: 0.5px;
+  }
+
+  .check-issue-suggestion::before {
+    content: '建議 · ';
+    color: var(--gold);
+    font-family: var(--italic);
+    font-style: italic;
+  }
+
+  .check-all-clear {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .check-all-clear-icon {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 48px;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .check-all-clear-title {
+    font-family: var(--serif);
+    font-size: 15px;
+    letter-spacing: 4px;
+    color: var(--paper);
+    margin-bottom: 6px;
+  }
+
+  .check-all-clear-sub {
+    font-family: var(--italic);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 640px) {
+    .check-report-panel {
+      max-height: 95vh;
+    }
+    .check-report-header {
+      padding: 18px 20px;
+    }
+    .check-report-title-cn { font-size: 14px; letter-spacing: 4px; }
+    .check-report-body { padding: 20px; }
+    .check-summary { padding: 14px 16px; }
+    .check-issue { padding: 12px 14px; }
+  }
+
+  /* btn-ai-check 特殊樣式 */
+  .btn-ai-check {
+    border-color: var(--gold-dim) !important;
+    color: var(--gold) !important;
+  }
+
+  .btn-ai-check:hover {
+    border-color: var(--gold) !important;
+    background: var(--ink) !important;
   }
 
   /* ============ 對話設計彈出頁 ============ */
@@ -3912,6 +4324,36 @@
   </div>
 </div>
 
+<!-- AI 檢查報告彈出頁 -->
+<div class="check-report-overlay" id="checkReportOverlay">
+  <div class="check-report-panel">
+    <div class="check-report-header">
+      <div class="check-report-title">
+        <span class="check-report-num">✦</span>
+        <span class="check-report-title-text">
+          <span class="check-report-title-cn">AI 品質檢查</span>
+          <span class="check-report-title-en">Quality Check Report</span>
+        </span>
+      </div>
+      <button class="dialogue-btn-icon" id="checkReportCloseBtn">
+        <span>✕</span>
+      </button>
+    </div>
+
+    <!-- 進度區 -->
+    <div class="check-progress" id="checkProgress">
+      <div class="check-progress-spinner"></div>
+      <div class="check-progress-text" id="checkProgressText">正在分析條目⋯⋯</div>
+      <div class="check-progress-hint">這可能需要 10-30 秒，取決於條目數量</div>
+    </div>
+
+    <!-- 報告內容區 -->
+    <div class="check-report-body" id="checkReportBody" style="display:none;">
+      <!-- 由 JS 動態填入 -->
+    </div>
+  </div>
+</div>
+
 <!-- 對話設計彈出頁 -->
 <div class="dialogue-overlay" id="dialogueOverlay">
   <div class="dialogue-panel">
@@ -5443,6 +5885,9 @@ function renderActionBar() {
   return `
     <div class="global-actions">
       <button class="btn-secondary" id="copyAllBtn">複製全部</button>
+      <button class="btn-secondary btn-ai-check" id="aiCheckBtn" title="AI 品質檢查：找出需要改進的條目">
+        <span class="btn-ai-icon">✦</span> AI 檢查品質
+      </button>
       <div class="export-dropdown">
         <button class="btn-secondary" id="exportBtn">匯出下載 ▾</button>
         <div class="export-menu" id="exportMenu">
@@ -5684,6 +6129,12 @@ function renderSingleItem(idx) {
       <div class="item-actions">
         <button class="btn-delete" data-idx="${idx}">移除此項</button>
         <div class="item-actions-right">
+          <button class="btn-ai btn-ai-keywords" data-idx="${idx}" title="讓 AI 推薦更多觸發關鍵字">
+            <span class="btn-ai-icon">✦</span> 補關鍵字
+          </button>
+          <button class="btn-ai btn-ai-expand" data-idx="${idx}" title="讓 AI 擴充此條目的細節">
+            <span class="btn-ai-icon">✦</span> 擴充內容
+          </button>
           <button class="btn-image" data-idx="${idx}" title="匯出為圖片分享">存為圖片</button>
           <button class="btn-copy" data-idx="${idx}">複製此項</button>
         </div>
@@ -5780,6 +6231,24 @@ function attachResultListeners() {
     });
   });
 
+  // AI 補關鍵字
+  document.querySelectorAll('.btn-ai-keywords').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const btnEl = e.target.closest('.btn-ai');
+      const idx = +btnEl.dataset.idx;
+      aiSuggestKeywords(idx, btnEl);
+    });
+  });
+
+  // AI 擴充內容
+  document.querySelectorAll('.btn-ai-expand').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const btnEl = e.target.closest('.btn-ai');
+      const idx = +btnEl.dataset.idx;
+      aiExpandContent(idx, btnEl);
+    });
+  });
+
   // 刪除單項
   document.querySelectorAll('.btn-delete').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -5800,6 +6269,11 @@ function attachResultListeners() {
     })), null, 2);
     copyToClipboard(json);
     showToast('已複製所有項目 (JSON)');
+  });
+
+  // AI 品質檢查
+  document.getElementById('aiCheckBtn')?.addEventListener('click', () => {
+    runAICheck();
   });
 
   // 匯出下拉
@@ -6083,6 +6557,553 @@ function attachToolbarOnlyListeners() {
       showToast(`已將 ${count} 項改為${newCat ? `「${getCategoryLabel(newCat)}」` : '未分類'}`);
     });
   });
+}
+
+// ============ AI 品質檢查（整批） ============
+async function runAICheck() {
+  if (!state.items || state.items.length === 0) {
+    showToast('目前沒有條目可檢查');
+    return;
+  }
+
+  if (!state.apiKey) {
+    showToast('請先設定 Gemini API key');
+    return;
+  }
+
+  // 開啟彈窗
+  const overlay = document.getElementById('checkReportOverlay');
+  const progress = document.getElementById('checkProgress');
+  const body = document.getElementById('checkReportBody');
+  const progressText = document.getElementById('checkProgressText');
+
+  overlay.classList.add('show');
+  progress.style.display = 'block';
+  body.style.display = 'none';
+  progressText.textContent = '正在執行本地預檢⋯⋯';
+
+  try {
+    // === Step 1: 本地預檢（立即可做的規則檢查）===
+    const localIssues = runLocalChecks();
+
+    progressText.textContent = `向 Gemini 請求深度分析⋯⋯（共 ${state.items.length} 條）`;
+
+    // === Step 2: AI 深度檢查 ===
+    const aiIssues = await runGeminiCheck();
+
+    // 合併與去重（以 idx + type 為 key）
+    const allIssues = [...localIssues, ...aiIssues];
+
+    // 呈現報告
+    progress.style.display = 'none';
+    body.style.display = 'block';
+    body.innerHTML = renderCheckReport(allIssues);
+
+    // 綁定點擊條目跳轉
+    body.querySelectorAll('.check-issue').forEach(el => {
+      el.addEventListener('click', () => {
+        const idx = +el.dataset.idx;
+        overlay.classList.remove('show');
+        setTimeout(() => {
+          const card = document.querySelector(`.item-card[data-idx="${idx}"]`);
+          if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.style.transition = 'box-shadow 0.3s';
+            card.style.boxShadow = `0 0 0 2px var(--gold)`;
+            setTimeout(() => { card.style.boxShadow = ''; }, 2400);
+          }
+        }, 300);
+      });
+    });
+
+  } catch (err) {
+    console.error(err);
+    progress.style.display = 'none';
+    body.style.display = 'block';
+    body.innerHTML = `
+      <div class="check-all-clear">
+        <div class="check-all-clear-icon">!</div>
+        <div class="check-all-clear-title">檢查失敗</div>
+        <div class="check-all-clear-sub">${escapeHtml(err.message)}</div>
+      </div>
+    `;
+  }
+}
+
+// ============ 本地規則檢查（不用 API）============
+function runLocalChecks() {
+  const issues = [];
+
+  state.items.forEach((item, idx) => {
+    const titleLen = (item.title || '').length;
+    const contentLen = (item.content || '').length;
+    const kwCount = (item.keywords || []).length;
+
+    // 缺標題
+    if (titleLen === 0) {
+      issues.push({
+        idx, type: 'title_empty', severity: 'high',
+        message: '此條目沒有標題',
+        suggestion: '建議根據內容摘要訂個簡短標題（最多 50 字）'
+      });
+    }
+
+    // 缺內容
+    if (contentLen === 0) {
+      issues.push({
+        idx, type: 'content_empty', severity: 'high',
+        message: '此條目沒有內容',
+        suggestion: '請補充具體描述，或考慮刪除這條目'
+      });
+    } else if (contentLen < 30) {
+      issues.push({
+        idx, type: 'content_too_short', severity: 'medium',
+        message: `內容只有 ${contentLen} 字，可能太短`,
+        suggestion: '建議擴充到至少 100 字，可以用「擴充內容」按鈕讓 AI 幫忙'
+      });
+    }
+
+    // 缺類別
+    if (!item.category) {
+      issues.push({
+        idx, type: 'no_category', severity: 'low',
+        message: '尚未設定類別',
+        suggestion: '建議指定一個類別方便分類管理（角色/地點/物品⋯⋯）'
+      });
+    }
+
+    // 關鍵字過少
+    if (kwCount === 0) {
+      issues.push({
+        idx, type: 'no_keywords', severity: 'high',
+        message: '沒有設定任何關鍵字',
+        suggestion: '沒有關鍵字，AI 永遠不會觸發這條目。按「補關鍵字」讓 AI 推薦'
+      });
+    } else if (kwCount < 2) {
+      issues.push({
+        idx, type: 'too_few_keywords', severity: 'medium',
+        message: `只有 ${kwCount} 個關鍵字，可能覆蓋不足`,
+        suggestion: '建議至少 3-5 個，涵蓋正式名、簡稱、別名'
+      });
+    }
+  });
+
+  return issues;
+}
+
+// ============ Gemini 深度檢查 ============
+async function runGeminiCheck() {
+  // 準備精簡版資料送給 AI
+  const compact = state.items.map((item, idx) => ({
+    idx,
+    title: item.title || '',
+    category: item.category ? getCategoryLabel(item.category) : '未分類',
+    keywords: item.keywords || [],
+    content: (item.content || '').slice(0, 400) // 只傳前 400 字節省 token
+  }));
+
+  const prompt = `你是 lorebook 品質檢查員。請檢查以下條目清單，找出**需要改進**的地方。
+
+# 檢查重點
+1. **內容模糊**：描述太抽象、沒有具體可用的細節
+2. **關鍵字不夠齊全**：現有關鍵字明顯漏掉某些該概念的稱呼或別名（例如人物條目叫「顧雲深」但關鍵字只有「顧雲深」，缺「雲深、顧先生」等）
+3. **內容重複**：兩條或多條條目描述同一個人物/地點/概念
+4. **內容矛盾**：同一個概念在不同條目中說法不一致（例如 A 條目說角色 25 歲，B 條目說 30 歲）
+5. **撰寫視角錯誤**：指令型條目（存檔/擲骰之類）應該用祈使句寫給 AI 看，卻寫成介紹文
+6. **類別不合適**：類別跟內容不符
+
+# 條目清單（共 ${compact.length} 條）
+${JSON.stringify(compact, null, 2)}
+
+# 輸出格式
+**只輸出 JSON 陣列**，每個物件代表一個問題：
+[
+  {
+    "idx": 0,
+    "type": "vague_content" / "missing_keywords" / "duplicate" / "conflict" / "wrong_perspective" / "wrong_category" / 其他,
+    "severity": "high" / "medium" / "low",
+    "message": "具體說明這個條目有什麼問題（約 30-60 字）",
+    "suggestion": "具體的改進建議（約 30-80 字）"
+  }
+]
+
+# 規則
+- 只列**真正需要改進**的問題，沒問題的條目不用寫
+- 若發現重複/矛盾，在兩個相關條目都各列一次（idx 不同）
+- **嚴重度判斷**：
+  - high = 會讓條目完全無法使用（如關鍵字完全錯誤、內容跟標題無關）
+  - medium = 可以用但效果不好（如關鍵字太少、內容太模糊）
+  - low = 美化建議（如類別可以更精確）
+- 不要重複本地已檢查的問題（標題空、內容空、關鍵字 0 個、無類別、內容 <30 字、關鍵字 <2 個）
+- 如果沒有問題，回傳空陣列 []`;
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        safetySettings: [
+          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+          { category: 'HARM_CATEGORY_CIVIC_INTEGRITY', threshold: 'BLOCK_NONE' }
+        ],
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.3,
+          maxOutputTokens: 8192,
+          thinkingConfig: { thinkingBudget: 0 }
+        }
+      })
+    }
+  );
+
+  if (!response.ok) throw new Error(`API 錯誤 ${response.status}`);
+  const data = await response.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) return [];
+
+  try {
+    const issues = JSON.parse(text);
+    if (!Array.isArray(issues)) return [];
+    return issues.map(issue => ({
+      idx: typeof issue.idx === 'number' ? issue.idx : -1,
+      type: issue.type || 'ai_detected',
+      severity: ['high', 'medium', 'low'].includes(issue.severity) ? issue.severity : 'medium',
+      message: String(issue.message || '').slice(0, 200),
+      suggestion: String(issue.suggestion || '').slice(0, 300)
+    })).filter(i => i.idx >= 0 && i.idx < state.items.length && i.message);
+  } catch (e) {
+    console.warn('AI 回應解析失敗', e);
+    return [];
+  }
+}
+
+// ============ 渲染檢查報告 ============
+function renderCheckReport(issues) {
+  const total = state.items.length;
+  const issueCount = issues.length;
+  const high = issues.filter(i => i.severity === 'high').length;
+  const medium = issues.filter(i => i.severity === 'medium').length;
+  const low = issues.filter(i => i.severity === 'low').length;
+  const affectedIdxs = new Set(issues.map(i => i.idx));
+  const cleanCount = total - affectedIdxs.size;
+
+  if (issueCount === 0) {
+    return `
+      <div class="check-all-clear">
+        <div class="check-all-clear-icon">✦</div>
+        <div class="check-all-clear-title">品質良好</div>
+        <div class="check-all-clear-sub">AI 檢查完 ${total} 條條目，沒發現明顯問題</div>
+      </div>
+    `;
+  }
+
+  // 依照嚴重度排序：high > medium > low
+  const severityOrder = { high: 0, medium: 1, low: 2 };
+  issues.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity] || a.idx - b.idx);
+
+  // 分類分組
+  const groups = {
+    high: issues.filter(i => i.severity === 'high'),
+    medium: issues.filter(i => i.severity === 'medium'),
+    low: issues.filter(i => i.severity === 'low')
+  };
+
+  const sectionLabels = {
+    high: '嚴重問題 · Critical',
+    medium: '一般問題 · Moderate',
+    low: '改進建議 · Minor'
+  };
+
+  const renderIssue = (issue) => {
+    const item = state.items[issue.idx];
+    const sevLabel = { high: '嚴重', medium: '一般', low: '建議' }[issue.severity];
+    return `
+      <div class="check-issue severity-${issue.severity}" data-idx="${issue.idx}">
+        <div class="check-issue-header">
+          <span class="check-issue-idx">${String(issue.idx + 1).padStart(2, '0')}</span>
+          <span class="check-issue-title">${escapeHtml(item.title || '（無標題）')}</span>
+          <span class="check-issue-severity ${issue.severity}">${sevLabel}</span>
+        </div>
+        <div class="check-issue-message">${escapeHtml(issue.message)}</div>
+        ${issue.suggestion ? `<div class="check-issue-suggestion">${escapeHtml(issue.suggestion)}</div>` : ''}
+      </div>
+    `;
+  };
+
+  let sectionsHtml = '';
+  ['high', 'medium', 'low'].forEach(sev => {
+    if (groups[sev].length === 0) return;
+    sectionsHtml += `
+      <div class="check-section">
+        <div class="check-section-header">
+          <span class="check-section-icon">${sev === 'high' ? '⚠' : sev === 'medium' ? '◆' : '◇'}</span>
+          <span>${sectionLabels[sev]}</span>
+          <span style="margin-left:auto;font-family:var(--display);font-style:italic;color:var(--paper-soft);">${groups[sev].length}</span>
+        </div>
+        ${groups[sev].map(renderIssue).join('')}
+      </div>
+    `;
+  });
+
+  return `
+    <div class="check-summary">
+      <div class="check-summary-text">
+        檢查了 <strong>${total}</strong> 條條目，發現 <strong>${issueCount}</strong> 個需要注意的地方。<br>
+        點擊下方任一問題可跳轉到對應條目。
+      </div>
+      <div class="check-summary-stats">
+        <div class="check-stat">
+          <div class="check-stat-num good">${cleanCount}</div>
+          <div class="check-stat-label">無問題</div>
+        </div>
+        <div class="check-stat">
+          <div class="check-stat-num bad">${high}</div>
+          <div class="check-stat-label">嚴重</div>
+        </div>
+        <div class="check-stat">
+          <div class="check-stat-num warn">${medium}</div>
+          <div class="check-stat-label">一般</div>
+        </div>
+        <div class="check-stat">
+          <div class="check-stat-num" style="color:var(--paper-soft);">${low}</div>
+          <div class="check-stat-label">建議</div>
+        </div>
+      </div>
+    </div>
+    ${sectionsHtml}
+  `;
+}
+
+// ============ AI 檢查報告彈窗關閉事件 ============
+(function bindCheckReportModal() {
+  const overlay = document.getElementById('checkReportOverlay');
+  const closeBtn = document.getElementById('checkReportCloseBtn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => overlay.classList.remove('show'));
+  }
+  if (overlay) {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('show');
+    });
+  }
+})();
+
+// ============ AI 單條操作：補關鍵字 ============
+async function aiSuggestKeywords(idx, btnEl) {
+  const item = state.items[idx];
+  if (!item) return;
+
+  if (!state.apiKey) {
+    showToast('請先設定 Gemini API key');
+    return;
+  }
+
+  if (!item.content || item.content.trim().length < 10) {
+    showToast('內容太短，先補充內容再補關鍵字');
+    return;
+  }
+
+  // 禁用按鈕、顯示載入中
+  btnEl.disabled = true;
+  const originalHtml = btnEl.innerHTML;
+  btnEl.innerHTML = '<span class="btn-ai-icon">✦</span> 思考中⋯⋯';
+
+  try {
+    const existing = (item.keywords || []).join('、') || '（無）';
+    const catLabel = item.category ? getCategoryLabel(item.category) : '未分類';
+
+    const prompt = `你是 lorebook 關鍵字推薦專家。根據下列條目內容，推薦 5-10 個**新的**觸發關鍵字（不要重複現有的）。
+
+# 現有條目
+- 標題：${item.title}
+- 類別：${catLabel}
+- 現有關鍵字：${existing}
+- 內容：${item.content}
+
+# 關鍵字撰寫原則
+關鍵字是 AI 在對話中讀到時會「觸發」此條目的詞。要涵蓋：
+1. 正式名稱、簡稱、暱稱、別名
+2. 劇情中可能提到這個概念的各種說法
+3. 相關動作或情境詞（例如角色的條目可包含他常做的動作或口頭禪）
+4. 不要太泛用（例如「人」「地方」這種詞）
+5. 中文為主，但若原文有英文名/代號也可以保留
+
+# 輸出格式
+**只輸出 JSON 陣列**，不要任何前後文字：
+["關鍵字1","關鍵字2","關鍵字3"]
+
+# 限制
+- 5 到 10 個
+- 每個關鍵字最多 20 字
+- 不要重複現有關鍵字：${existing}`;
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_CIVIC_INTEGRITY', threshold: 'BLOCK_NONE' }
+          ],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.8,
+            maxOutputTokens: 1024,
+            thinkingConfig: { thinkingBudget: 0 }
+          }
+        })
+      }
+    );
+
+    if (!response.ok) throw new Error(`API 錯誤 ${response.status}`);
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error('AI 沒有回傳內容');
+
+    const suggestions = JSON.parse(text);
+    if (!Array.isArray(suggestions)) throw new Error('回傳格式不正確');
+
+    // 過濾掉已有的、重複的、太長的
+    const existingSet = new Set(item.keywords || []);
+    const newOnes = [...new Set(suggestions)]
+      .filter(k => typeof k === 'string' && k.trim())
+      .map(k => k.trim().slice(0, 20))
+      .filter(k => !existingSet.has(k));
+
+    if (newOnes.length === 0) {
+      showToast('AI 沒有推薦新的關鍵字（可能已經很齊全了）');
+      return;
+    }
+
+    // 加入到 suggested（不直接加到 keywords，讓使用者點選）
+    item.suggested = [...new Set([...(item.suggested || []), ...newOnes])];
+    renderResults();
+    showToast(`AI 推薦了 ${newOnes.length} 個關鍵字（請點選加入）`);
+
+  } catch (err) {
+    console.error(err);
+    showToast('補關鍵字失敗：' + err.message);
+  } finally {
+    btnEl.disabled = false;
+    btnEl.innerHTML = originalHtml;
+  }
+}
+
+// ============ AI 單條操作：擴充內容 ============
+async function aiExpandContent(idx, btnEl) {
+  const item = state.items[idx];
+  if (!item) return;
+
+  if (!state.apiKey) {
+    showToast('請先設定 Gemini API key');
+    return;
+  }
+
+  if (!item.content || item.content.trim().length < 10) {
+    showToast('內容太短，至少寫幾句話再擴充');
+    return;
+  }
+
+  // 確認（因為會覆蓋原本的 content）
+  if (!confirm(`AI 會根據目前的內容擴充細節，原本的內容會被替換（但會保留核心設定）。\n\n要繼續嗎？`)) {
+    return;
+  }
+
+  btnEl.disabled = true;
+  const originalHtml = btnEl.innerHTML;
+  btnEl.innerHTML = '<span class="btn-ai-icon">✦</span> 擴充中⋯⋯';
+
+  try {
+    const catLabel = item.category ? getCategoryLabel(item.category) : '未分類';
+    const keywords = (item.keywords || []).join('、') || '（無）';
+
+    const prompt = `你是 lorebook 條目擴充專家。請依照下列原始條目，**擴充其細節**到 1200-1800 字左右。
+
+# 原始條目
+- 標題：${item.title}
+- 類別：${catLabel}
+- 關鍵字：${keywords}
+- 原內容：
+${item.content}
+
+# 擴充方向
+根據類別選擇擴充重點：
+- **人物**：外貌、性格、背景、說話風格、習慣、人際關係、角色動機
+- **地點**：地理位置、氛圍、建築、居民、歷史、在劇情中的用途
+- **組織**：成員結構、目標、資源、內部規則、與外部關係、歷史
+- **物品**：外觀、功能、取得方式、歷史、使用限制、象徵意義
+- **能力/規則**：運作原理、限制、反作用、習得方式、在劇情中如何呈現
+- **指令型**（存檔、擲骰等）：觸發條件、執行步驟、輸出格式、例外處理
+- **關係/親密向**：互動細節、界線、特殊偏好、相處默契
+
+# 撰寫原則
+1. **擴充而非改寫**：保留原始內容的核心設定，不可推翻或矛盾
+2. **條理清晰**：用段落或條列整理，不要一團文字
+3. **可用性**：寫成 AI 能直接應用於角色扮演的具體細節，不要抽象概念
+4. **保留語氣**：原文是正經就維持正經，原文活潑就保留活潑
+5. **指令型條目**必須用「當 X 時，你應該 Y」的祈使句
+
+# 輸出格式
+**只輸出擴充後的內容文字本身**，不要任何前後文字、不要用 JSON、不要加標題。
+
+# 字數上限
+1800 字（絕對不可超過 2000 字）`;
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_CIVIC_INTEGRITY', threshold: 'BLOCK_NONE' }
+          ],
+          generationConfig: {
+            temperature: 0.75,
+            maxOutputTokens: 4096,
+            thinkingConfig: { thinkingBudget: 0 }
+          }
+        })
+      }
+    );
+
+    if (!response.ok) throw new Error(`API 錯誤 ${response.status}`);
+    const data = await response.json();
+    const finishReason = data.candidates?.[0]?.finishReason;
+    if (finishReason === 'SAFETY' || finishReason === 'PROHIBITED_CONTENT') {
+      throw new Error('被安全過濾器擋下');
+    }
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error('AI 沒有回傳內容');
+
+    const expanded = text.trim().slice(0, 2000);
+    item.content = expanded;
+    renderResults();
+    showToast(`已擴充為 ${expanded.length} 字`);
+
+  } catch (err) {
+    console.error(err);
+    showToast('擴充失敗：' + err.message);
+  } finally {
+    btnEl.disabled = false;
+    btnEl.innerHTML = originalHtml;
+  }
 }
 
 // ============ 匯出單一條目為圖片 ============
