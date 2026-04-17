@@ -1257,6 +1257,90 @@
     border-bottom: 1px dashed var(--ink-line);
   }
 
+  /* 匯出下拉 */
+  .export-dropdown {
+    position: relative;
+  }
+
+  .export-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 260px;
+    background: var(--card-bg);
+    border: 1px solid var(--ink-line);
+    border-radius: 2px;
+    padding: 8px;
+    box-shadow: 0 10px 40px var(--shadow-color-strong);
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.25s;
+    z-index: 50;
+  }
+
+  .export-dropdown.open .export-menu {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .export-menu-label {
+    font-family: var(--serif);
+    font-size: 10px;
+    color: var(--paper-soft);
+    letter-spacing: 4px;
+    padding: 8px 12px 4px;
+    opacity: 0.7;
+  }
+
+  .export-menu-divider {
+    height: 1px;
+    background: var(--ink-line);
+    margin: 6px 12px;
+    opacity: 0.5;
+  }
+
+  .export-option {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    width: 100%;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s;
+  }
+
+  .export-option:hover {
+    background: var(--ink-soft);
+  }
+
+  .export-option-title {
+    font-family: var(--serif);
+    font-size: 13px;
+    color: var(--paper);
+    letter-spacing: 2px;
+    font-weight: 500;
+  }
+
+  .export-option-desc {
+    font-family: var(--italic);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--paper-soft);
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+  }
+
+  .export-option-import .export-option-title {
+    color: var(--gold);
+  }
+
   /* 模式切換 */
   .mode-switcher {
     display: flex;
@@ -4918,6 +5002,35 @@ function renderResults() {
   let html = `
     <div class="global-actions">
       <button class="btn-secondary" id="copyAllBtn">複製全部</button>
+      <div class="export-dropdown">
+        <button class="btn-secondary" id="exportBtn">匯出下載 ▾</button>
+        <div class="export-menu" id="exportMenu">
+          <div class="export-menu-label">選擇格式</div>
+          <button class="export-option" data-format="json" data-scope="full">
+            <span class="export-option-title">完整備份</span>
+            <span class="export-option-desc">.json · 含主題、自訂類別、對話紀錄</span>
+          </button>
+          <button class="export-option" data-format="json" data-scope="basic">
+            <span class="export-option-title">基本 JSON</span>
+            <span class="export-option-desc">.json · 只存設定集條目</span>
+          </button>
+          <div class="export-menu-divider"></div>
+          <button class="export-option" data-format="markdown" data-scope="basic">
+            <span class="export-option-title">Markdown</span>
+            <span class="export-option-desc">.md · 人類可讀的條列格式</span>
+          </button>
+          <button class="export-option" data-format="txt" data-scope="basic">
+            <span class="export-option-title">純文字</span>
+            <span class="export-option-desc">.txt · 直接貼回 App 使用</span>
+          </button>
+          <div class="export-menu-divider"></div>
+          <button class="export-option export-option-import" id="importJsonBtn">
+            <span class="export-option-title">⇣ 匯入 JSON</span>
+            <span class="export-option-desc">從先前匯出的檔案還原</span>
+          </button>
+          <input type="file" id="importJsonInput" accept=".json" style="display:none;">
+        </div>
+      </div>
       <button class="btn-secondary" id="clearBtn">全部清除</button>
     </div>
   `;
@@ -5119,6 +5232,56 @@ function attachResultListeners() {
     showToast('已複製所有項目 (JSON)');
   });
 
+  // 匯出下拉
+  const exportDropdown = document.querySelector('.export-dropdown');
+  const exportBtn = document.getElementById('exportBtn');
+  exportBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    exportDropdown.classList.toggle('open');
+  });
+
+  // 匯出選項
+  document.querySelectorAll('.export-option').forEach(opt => {
+    opt.addEventListener('click', (e) => {
+      const format = opt.dataset.format;
+      const scope = opt.dataset.scope;
+      if (format && scope) {
+        exportLorebook(format, scope);
+        exportDropdown.classList.remove('open');
+      }
+    });
+  });
+
+  // 匯入 JSON
+  const importJsonBtn = document.getElementById('importJsonBtn');
+  const importJsonInput = document.getElementById('importJsonInput');
+  importJsonBtn?.addEventListener('click', () => {
+    importJsonInput.click();
+    exportDropdown.classList.remove('open');
+  });
+  importJsonInput?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        importLorebook(ev.target.result);
+      } catch (err) {
+        showToast('匯入失敗：' + err.message);
+      }
+    };
+    reader.readAsText(file, 'UTF-8');
+    // 清空 input 讓同一檔案能再次匯入
+    e.target.value = '';
+  });
+
+  // 點擊外部關閉下拉
+  document.addEventListener('click', (e) => {
+    if (!exportDropdown?.contains(e.target)) {
+      exportDropdown?.classList.remove('open');
+    }
+  }, { once: false });
+
   // 清空
   document.getElementById('clearBtn')?.addEventListener('click', () => {
     if (confirm('清空整個 Lorebook 設定集？')) {
@@ -5126,6 +5289,198 @@ function attachResultListeners() {
       renderResults();
     }
   });
+}
+
+// ============ 匯出 Lorebook ============
+function exportLorebook(format, scope) {
+  if (!state.items || state.items.length === 0) {
+    showToast('目前沒有條目可匯出');
+    return;
+  }
+
+  const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-').replace('T', '_');
+  let content = '';
+  let filename = '';
+  let mimeType = 'text/plain;charset=utf-8';
+
+  if (format === 'json') {
+    if (scope === 'full') {
+      // 完整備份
+      const backup = {
+        _meta: {
+          app: 'LoveyDovey Lorebook Converter',
+          version: '1.0',
+          exportedAt: new Date().toISOString(),
+          itemCount: state.items.length
+        },
+        items: state.items.map(i => ({
+          title: i.title,
+          category: i.category,
+          keywords: i.keywords,
+          content: i.content
+        })),
+        customCategories: state.customCategories,
+        theme: localStorage.getItem('lorebook_theme') || 'sakura',
+        dialogueSessions: JSON.parse(localStorage.getItem('dialogue_sessions') || '[]')
+      };
+      content = JSON.stringify(backup, null, 2);
+      filename = `lorebook-full-backup-${timestamp}.json`;
+    } else {
+      // 基本 JSON
+      const basic = state.items.map(i => ({
+        title: i.title,
+        category: i.category,
+        keywords: i.keywords,
+        content: i.content
+      }));
+      content = JSON.stringify(basic, null, 2);
+      filename = `lorebook-${timestamp}.json`;
+    }
+    mimeType = 'application/json;charset=utf-8';
+  } else if (format === 'markdown') {
+    const lines = [
+      `# Lorebook 設定集`,
+      ``,
+      `> 匯出時間：${new Date().toLocaleString('zh-TW')}　·　共 ${state.items.length} 條`,
+      ``,
+      `---`,
+      ``
+    ];
+    state.items.forEach((item, idx) => {
+      lines.push(`## ${String(idx + 1).padStart(2, '0')}　${item.title}`);
+      lines.push('');
+      if (item.category) {
+        lines.push(`**類別**：${getCategoryLabel(item.category)}`);
+        lines.push('');
+      }
+      if (item.keywords && item.keywords.length > 0) {
+        lines.push(`**觸發關鍵字**：${item.keywords.join('、')}`);
+        lines.push('');
+      }
+      lines.push(`**內容**：`);
+      lines.push('');
+      lines.push(item.content);
+      lines.push('');
+      lines.push('---');
+      lines.push('');
+    });
+    content = lines.join('\n');
+    filename = `lorebook-${timestamp}.md`;
+    mimeType = 'text/markdown;charset=utf-8';
+  } else if (format === 'txt') {
+    // 純文字（格式化好可直接貼到 App）
+    const lines = [];
+    state.items.forEach((item, idx) => {
+      lines.push(`【${String(idx + 1).padStart(2, '0')}】${item.title}`);
+      if (item.keywords && item.keywords.length > 0) {
+        lines.push(`關鍵字：${item.keywords.join('、')}`);
+      }
+      lines.push('');
+      lines.push(item.content);
+      lines.push('');
+      lines.push('━━━━━━━━━━━━━━━━');
+      lines.push('');
+    });
+    content = lines.join('\n');
+    filename = `lorebook-${timestamp}.txt`;
+  }
+
+  // 觸發下載
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast(`已下載 ${filename}`);
+}
+
+// ============ 匯入 Lorebook ============
+function importLorebook(jsonText) {
+  const data = JSON.parse(jsonText);
+  let importedItems = [];
+  let importedCustomCats = [];
+  let importedSessions = [];
+  let importedTheme = null;
+
+  // 判斷是完整備份還是基本 JSON
+  if (data._meta && data.items) {
+    // 完整備份
+    importedItems = data.items;
+    importedCustomCats = data.customCategories || [];
+    importedSessions = data.dialogueSessions || [];
+    importedTheme = data.theme;
+  } else if (Array.isArray(data)) {
+    // 基本 JSON（陣列）
+    importedItems = data;
+  } else {
+    throw new Error('無法識別的檔案格式');
+  }
+
+  if (!Array.isArray(importedItems) || importedItems.length === 0) {
+    throw new Error('檔案中沒有條目');
+  }
+
+  // 詢問要覆蓋還是合併
+  const currentCount = state.items?.length || 0;
+  let action = 'replace';
+  if (currentCount > 0) {
+    const confirmed = confirm(
+      `目前設定集有 ${currentCount} 條，要匯入的檔案有 ${importedItems.length} 條。\n\n` +
+      `按「確定」= 合併（在現有條目後追加）\n` +
+      `按「取消」= 直接覆蓋`
+    );
+    action = confirmed ? 'append' : 'replace';
+  }
+
+  // 標準化匯入的 items
+  const normalizedItems = importedItems.map(item => ({
+    title: String(item.title || '未命名').slice(0, 50),
+    category: item.category || null,
+    content: String(item.content || '').slice(0, 2000),
+    keywords: Array.isArray(item.keywords) ? item.keywords.slice(0, 10) : [],
+    suggested: []
+  }));
+
+  if (action === 'append') {
+    state.items = [...(state.items || []), ...normalizedItems];
+  } else {
+    state.items = normalizedItems;
+  }
+
+  // 合併自訂類別（避免重複 key）
+  if (importedCustomCats.length > 0) {
+    const existingKeys = new Set(state.customCategories.map(c => c.key));
+    const newCats = importedCustomCats.filter(c => !existingKeys.has(c.key));
+    if (newCats.length > 0) {
+      state.customCategories = [...state.customCategories, ...newCats];
+      localStorage.setItem('custom_categories', JSON.stringify(state.customCategories));
+      renderCustomCategories();
+    }
+  }
+
+  // 匯入對話紀錄（合併）
+  if (importedSessions.length > 0) {
+    const existingIds = new Set(dialogueState.sessions.map(s => s.id));
+    const newSessions = importedSessions.filter(s => !existingIds.has(s.id));
+    if (newSessions.length > 0) {
+      dialogueState.sessions = [...newSessions, ...dialogueState.sessions];
+      saveSessions();
+      renderSidebar();
+    }
+  }
+
+  // 套用主題（如果有）
+  if (importedTheme && THEMES[importedTheme]) {
+    applyTheme(importedTheme);
+  }
+
+  renderResults();
+  showToast(`已匯入 ${normalizedItems.length} 條`);
 }
 
 // ============ 更新單項字數（不重繪） ============
